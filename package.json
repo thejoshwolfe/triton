@@ -1,0 +1,23 @@
+{
+  "name": "triton",
+  "description": "video game inspired by star trek",
+  "author": "Josh Wolfe <thejoshwolfe@gmail.com>",
+  "version": "0.0.0",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/thejoshwolfe/triton/master/LICENSE"
+    }
+  ],
+  "engines": {
+    "node": "~0.8.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thejoshwolfe/triton.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "jspackage": "~0.4.5"
+  }
+}
