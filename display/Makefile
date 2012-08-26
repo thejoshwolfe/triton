@@ -2,6 +2,7 @@
 # the default target
 .PHONY: all
 all:
+	@: # suppress "nothing to be done" message
 
 BINARY_NAME = triton-display
 LIBS = glut
