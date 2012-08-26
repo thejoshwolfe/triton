@@ -1,0 +1,12 @@
+body {
+  padding-bottom: 40px;
+  padding-top: 60px;
+}
+
+.helm-view .helm-controls {
+    text-align: center;
+}
+
+.helm-view .helm-controls .row-fluid {
+  margin-bottom: 10px;
+}
