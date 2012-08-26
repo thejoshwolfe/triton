@@ -1,7 +1,8 @@
-http    = require 'http'
-express = require 'express'
-path    = require 'path'
-socketio      = require 'socket.io'
+http     = require 'http'
+express  = require 'express'
+net      = require 'net'
+path     = require 'path'
+socketio = require 'socket.io'
 
 app = express()
 
@@ -18,4 +19,7 @@ io.sockets.on 'connection', (socket) ->
   socket.on 'helm', (data) ->
     console.log "helm says: #{data.command}!"
 
+display_server = net.createServer (socket) ->
+  socket.end "Hello display!\n"
+display_server.listen 26874
 
