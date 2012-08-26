@@ -2,16 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Bootstrap, from Twitter</title>
+  <title>Triton</title>
 
-  <link href="/console/stylesheets/bootstrap.css" rel="stylesheet">
-  <link href="/console/stylesheets/bootstrap-responsive.css" rel="stylesheet">
-  <link href="/console/stylesheets/application.css" rel="stylesheet">
+  <link href="/stylesheets/bootstrap.css" rel="stylesheet">
+  <link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet">
+  <link href="/stylesheets/application.css" rel="stylesheet">
 
-  <script type="text/javascript" src="/console/lib/jquery.js"></script>
-  <script type="text/javascript" src="/console/lib/underscore.js"></script>
-  <script type="text/javascript" src="/console/lib/backbone.js"></script>
-  <script type="text/javascript" src="/console/lib/bootstrap.js"></script>
+  <script type="text/javascript" src="/lib/jquery.js"></script>
+  <script type="text/javascript" src="/lib/underscore.js"></script>
+  <script type="text/javascript" src="/lib/backbone.js"></script>
+  <script type="text/javascript" src="/lib/bootstrap.js"></script>
+
+  <!-- Load order -->
+  <script type="text/javascript" src="/router.js"></script>
+  <script type="text/javascript" src="/templates/jst.js"></script>
+  <script type="text/javascript" src="/templates/helm.js"></script>
+  <script type="text/javascript" src="/views/helm_view.js"></script>
+  <script type="text/javascript" src="/views/application_view.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      window.router = new Router(new ApplicationView());
+      Backbone.history.start();
+    });
+  </script>
 </head>
 
 <body>
@@ -26,11 +40,14 @@
         <a class="brand" href="#">Triton</a>
         <div class="nav-collapse collapse">
           <ul class="nav">
-            <li class="active"><a href="#">Helm</a></li>
+            <li class="active"><a href="#helm" >Helm</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
+  </div>
+
+  <div class="container-fluid" id="application-view">
   </div>
 </body>
 </html>
