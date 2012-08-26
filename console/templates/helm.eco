@@ -1,14 +1,22 @@
-<h2>Helm</h2>
 
 <div class="row-fluid">
-  <div class="helm-controls span2">
-    <div class="row-fluid">
-      <button class="btn btn-large"><i class="icon-arrow-up"></i> Up</button>
-    </div>
-    <div class="row-fluid">
-      <button class="btn btn-large"><i class="icon-arrow-left"></i> Left</button>
-      <button class="btn btn-large"><i class="icon-arrow-down"></i> Down</button>
-      <button class="btn btn-large"><i class="icon-arrow-right"></i> Right</button>
-    </div>
+  <div class="helm-controls span4 well">
+    <h2>Helm</h2>
+
+    <button class="btn btn-large up">
+      <i class="icon-arrow-up"></i>
+    </button>
+
+    <br />
+
+    <button class="btn btn-large left">
+      <i class="icon-arrow-left"></i>
+    </button>
+    <button class="btn btn-large down">
+      <i class="icon-arrow-down"></i>
+    </button>
+    <button class="btn btn-large right">
+      <i class="icon-arrow-right"></i>
+    </button>
   </div>
 </div>

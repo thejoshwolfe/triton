@@ -3,10 +3,14 @@ body {
   padding-top: 60px;
 }
 
-.helm-view .helm-controls {
-    text-align: center;
+.helm-controls {
+  text-align: center;
 }
 
-.helm-view .helm-controls .row-fluid {
+.helm-controls button {
   margin-bottom: 10px;
+}
+
+.helm-controls button.up {
+  margin-left: 3px;
 }
