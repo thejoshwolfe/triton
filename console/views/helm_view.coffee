@@ -7,7 +7,7 @@ class window.HelmView extends Backbone.View
 
   render: =>
     @$el.html @template @context()
-    this
+    @$el
 
   events:
     'click .up'   : 'click_up'
