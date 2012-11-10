@@ -1,6 +1,6 @@
 
 <div class="row-fluid">
-  <div class="helm-controls span4 well">
+  <div class="helm-controls span4">
     <h2>Helm</h2>
 
     <button class="btn btn-large up">

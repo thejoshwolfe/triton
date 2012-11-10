@@ -1,2 +1,28 @@
 
-<h1>Hello Display</h1>
+<div class="row-fluid">
+  <div class="span4">
+    <h2>Display</h2>
+
+    <canvas style="border: none;" width="500" height="500"></canvas>
+  </div>
+</div>
+
+<script id="shader-fs" type="x-shader/x-fragment">
+  precision mediump float;
+
+  void main(void) {
+    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+  }
+</script>
+
+<script id="shader-vs" type="x-shader/x-vertex">
+  attribute vec3 aVertexPosition;
+
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+
+  void main(void) {
+    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+  }
+</script>
+

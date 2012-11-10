@@ -47,6 +47,6 @@ task "watch", -> watch()
 
 task "dev", ->
   watch()
-  runServer = -> exec "node-dev", ["lib/server.js"]
+  runServer = -> exec "node-dev", ["server.js"]
   setTimeout runServer, 1000
 
