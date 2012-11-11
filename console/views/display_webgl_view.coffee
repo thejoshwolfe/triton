@@ -11,9 +11,25 @@ class window.DisplayWebGLView
     @gl.clearColor 0.0, 0.0, 0.0, 1.0
     @gl.enable     @gl.DEPTH_TEST
 
-    @_drawScene()
+    @rTri    = 0
+    @rSquare = 0
+
+    @_tick()
 
   # Protected
+
+  _animate: =>
+    timeNow = new Date().getTime()
+    if @lastTime
+      elapsed = timeNow - @lastTime
+
+      @rTri    += (90 * elapsed) / 1000.0
+      @rSquare += (75 * elapsed) / 1000.0
+
+    @lastTime = timeNow
+
+  _degToRad: (degrees) =>
+    degrees * Math.PI / 180
 
   _drawScene: =>
     @gl.viewport 0, 0, @gl.viewportWidth, @gl.viewportHeight
@@ -22,20 +38,26 @@ class window.DisplayWebGLView
     mat4.identity  @mvMatrix
 
     mat4.translate @mvMatrix, [-1.5, 0.0, -7.0]
+    @_mvPushMatrix()
+    mat4.rotate @mvMatrix, @_degToRad(@rTri), [0, 1, 0]
     @gl.bindBuffer @gl.ARRAY_BUFFER, @triangleVertexPositionBuffer
     @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @triangleVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
     @gl.bindBuffer @gl.ARRAY_BUFFER, @triangleVertexColorBuffer
     @gl.vertexAttribPointer @shaderProgram.vertexColorAttribute, @triangleVertexColorBuffer.itemSize, @gl.FLOAT, false, 0, 0
     @_setMatrixUniforms()
     @gl.drawArrays @gl.TRIANGLES, 0, @triangleVertexPositionBuffer.numItems
+    @_mvPopMatrix()
 
     mat4.translate @mvMatrix, [3.0, 0.0, 0.0]
+    @_mvPushMatrix()
+    mat4.rotate @mvMatrix, @_degToRad(@rSquare), [1, 0, 0]
     @gl.bindBuffer @gl.ARRAY_BUFFER, @squareVertexPositionBuffer
     @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @squareVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
     @gl.bindBuffer @gl.ARRAY_BUFFER, @squareVertexColorBuffer
     @gl.vertexAttribPointer @shaderProgram.vertexColorAttribute, @squareVertexColorBuffer.itemSize, @gl.FLOAT, false, 0, 0
     @_setMatrixUniforms()
     @gl.drawArrays @gl.TRIANGLE_STRIP, 0, @squareVertexPositionBuffer.numItems
+    @_mvPopMatrix()
 
   _getShader: ($el) =>
     shaderScript = $el[0]
@@ -100,6 +122,7 @@ class window.DisplayWebGLView
   _initShaders: =>
     @mvMatrix = mat4.create()
     @pMatrix  = mat4.create()
+    @mvMatrixStack = []
 
     fragmentShader = @_getShader $("#shader-fs")
     vertexShader   = @_getShader $("#shader-vs")
@@ -145,6 +168,20 @@ class window.DisplayWebGLView
     @triangleVertexColorBuffer.itemSize = 4
     @triangleVertexColorBuffer.numItems = 3
 
+  _mvPopMatrix: =>
+    throw 'Invalid popMatrix' unless @mvMatrixStack
+    @mvMatrix = @mvMatrixStack.pop()
+
+  _mvPushMatrix: =>
+    copy = mat4.create()
+    mat4.set @mvMatrix, copy
+    @mvMatrixStack.push copy
+
   _setMatrixUniforms: =>
     @gl.uniformMatrix4fv @shaderProgram.pMatrixUniform, false, @pMatrix
     @gl.uniformMatrix4fv @shaderProgram.mvMatrixUniform, false, @mvMatrix
+
+  _tick: =>
+    requestAnimFrame @_tick
+    @_drawScene()
+    @_animate()

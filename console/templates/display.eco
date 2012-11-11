@@ -3,7 +3,7 @@
   <div class="span4">
     <h2>Display</h2>
 
-    <canvas style="border: none;" width="500" height="500"></canvas>
+    <canvas style="border: none;" width="800" height="500"></canvas>
   </div>
 </div>
 
