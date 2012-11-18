@@ -38,10 +38,10 @@
 
   <script type="text/javascript">
     $(function() {
+      window.socket = io.connect();
+
       window.router = new Router(new ApplicationView());
       Backbone.history.start();
-
-      window.socket = io.connect();
     });
   </script>
 </head>

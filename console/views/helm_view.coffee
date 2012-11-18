@@ -10,10 +10,12 @@ class window.HelmView extends Backbone.View
     @$el
 
   events:
-    'click .up'   : 'click_up'
-    'click .down' : 'click_down'
-    'click .left' : 'click_left'
-    'click .right': 'click_right'
+    'click .up'     : 'click_up'
+    'click .down'   : 'click_down'
+    'click .left'   : 'click_left'
+    'click .right'  : 'click_right'
+    'click .forward': 'click_forward'
+    'click .back'   : 'click_back'
 
   # Event Handlers
 
@@ -28,6 +30,12 @@ class window.HelmView extends Backbone.View
 
   click_right: =>
     @emit 'right'
+
+  click_forward: =>
+    @emit 'forward'
+
+  click_back: =>
+    @emit 'back'
 
   # Instance Methods
   emit: (command) =>

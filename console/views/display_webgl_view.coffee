@@ -1,7 +1,17 @@
 class window.DisplayWebGLView
 
-  set_canvas: (@$canvas) =>
-    @canvas = @$canvas.get 0
+  constructor: ->
+    @currentPosition = [0.0, 0.0, 0.0]
+
+  go: (direction) =>
+    switch direction
+      when 'up'      then @currentPosition[1]--
+      when 'down'    then @currentPosition[1]++
+      when 'left'    then @currentPosition[0]++
+      when 'right'   then @currentPosition[0]--
+      when 'forward' then @currentPosition[2]++
+      when 'back'    then @currentPosition[2]--
+      else console?.log 'DisplayWebGLView.go: Invalid direction name'
 
   run: =>
     @gl = @_initGL()
@@ -15,6 +25,9 @@ class window.DisplayWebGLView
     @rCube    = 0
 
     @_tick()
+
+  set_canvas: (@$canvas) =>
+    @canvas = @$canvas.get 0
 
   # Protected
 
@@ -36,6 +49,10 @@ class window.DisplayWebGLView
     @gl.clear @gl.COLOR_BUFFER_BIT | @gl.DEPTH_BUFFER_BIT
     mat4.perspective 45, @gl.viewportWidth / @gl.viewportHeight, 0.1, 100.0, @pMatrix
     mat4.identity  @mvMatrix
+
+    # Camera Movement
+    mat4.translate @mvMatrix, @currentPosition
+    @_mvPushMatrix()
 
     # Pyramid
     mat4.translate @mvMatrix, [-1.5, 0.0, -7.0]
@@ -67,6 +84,8 @@ class window.DisplayWebGLView
     @gl.drawElements @gl.TRIANGLES, @cubeVertexIndexBuffer.numItems, @gl.UNSIGNED_SHORT, 0
 
     @_mvPopMatrix()
+
+    @_mvPopMatrix() # End _drawScene
 
 
   _getShader: ($el) =>

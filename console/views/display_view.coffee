@@ -4,6 +4,7 @@ class window.DisplayView extends Backbone.View
 
   initialize: =>
     @webgl_view = new DisplayWebGLView()
+    window.socket.on 'display', @display_event
 
   context: =>
     {}
@@ -15,4 +16,8 @@ class window.DisplayView extends Backbone.View
       @webgl_view.run()
     , 500
     @$el
+
+  # Event Handlers
+  display_event: (event={}) =>
+    @webgl_view.go event.direction if event.direction?
 
