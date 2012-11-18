@@ -11,8 +11,8 @@ class window.DisplayWebGLView
     @gl.clearColor 0.0, 0.0, 0.0, 1.0
     @gl.enable     @gl.DEPTH_TEST
 
-    @rTri    = 0
-    @rSquare = 0
+    @rPyramid = 0
+    @rCube    = 0
 
     @_tick()
 
@@ -23,8 +23,8 @@ class window.DisplayWebGLView
     if @lastTime
       elapsed = timeNow - @lastTime
 
-      @rTri    += (90 * elapsed) / 1000.0
-      @rSquare += (75 * elapsed) / 1000.0
+      @rPyramid += (90 * elapsed) / 1000.0
+      @rCube    += (75 * elapsed) / 1000.0
 
     @lastTime = timeNow
 
@@ -37,27 +37,37 @@ class window.DisplayWebGLView
     mat4.perspective 45, @gl.viewportWidth / @gl.viewportHeight, 0.1, 100.0, @pMatrix
     mat4.identity  @mvMatrix
 
+    # Pyramid
     mat4.translate @mvMatrix, [-1.5, 0.0, -7.0]
     @_mvPushMatrix()
-    mat4.rotate @mvMatrix, @_degToRad(@rTri), [0, 1, 0]
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @triangleVertexPositionBuffer
-    @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @triangleVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @triangleVertexColorBuffer
-    @gl.vertexAttribPointer @shaderProgram.vertexColorAttribute, @triangleVertexColorBuffer.itemSize, @gl.FLOAT, false, 0, 0
+    mat4.rotate @mvMatrix, @_degToRad(@rPyramid), [0, 1, 0]
+
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @pyramidVertexPositionBuffer
+    @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @pyramidVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
+
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @pyramidVertexColorBuffer
+    @gl.vertexAttribPointer @shaderProgram.vertexColorAttribute, @pyramidVertexColorBuffer.itemSize, @gl.FLOAT, false, 0, 0
     @_setMatrixUniforms()
-    @gl.drawArrays @gl.TRIANGLES, 0, @triangleVertexPositionBuffer.numItems
+    @gl.drawArrays @gl.TRIANGLES, 0, @pyramidVertexPositionBuffer.numItems
     @_mvPopMatrix()
 
+    # Cube
     mat4.translate @mvMatrix, [3.0, 0.0, 0.0]
     @_mvPushMatrix()
-    mat4.rotate @mvMatrix, @_degToRad(@rSquare), [1, 0, 0]
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @squareVertexPositionBuffer
-    @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @squareVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @squareVertexColorBuffer
-    @gl.vertexAttribPointer @shaderProgram.vertexColorAttribute, @squareVertexColorBuffer.itemSize, @gl.FLOAT, false, 0, 0
+    mat4.rotate @mvMatrix, @_degToRad(@rCube), [1, 1, 1]
+
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
+    @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @cubeVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
+
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexColorBuffer
+    @gl.vertexAttribPointer @shaderProgram.vertexColorAttribute, @cubeVertexColorBuffer.itemSize, @gl.FLOAT, false, 0, 0
+
+    @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
     @_setMatrixUniforms()
-    @gl.drawArrays @gl.TRIANGLE_STRIP, 0, @squareVertexPositionBuffer.numItems
+    @gl.drawElements @gl.TRIANGLES, @cubeVertexIndexBuffer.numItems, @gl.UNSIGNED_SHORT, 0
+
     @_mvPopMatrix()
+
 
   _getShader: ($el) =>
     shaderScript = $el[0]
@@ -85,8 +95,81 @@ class window.DisplayWebGLView
     shader
 
   _initBuffers: =>
-    @_initTriangle()
-    @_initSquare()
+    @_initPyramid()
+    @_initCube()
+
+  _initCube: =>
+    @cubeVertexPositionBuffer = @gl.createBuffer()
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
+
+    vertices = [
+      # Front Face
+      -1.0, -1.0,  1.0
+       1.0, -1.0,  1.0
+       1.0,  1.0,  1.0
+      -1.0,  1.0,  1.0
+      # Back Face
+      -1.0, -1.0, -1.0
+      -1.0,  1.0, -1.0
+       1.0,  1.0, -1.0
+       1.0, -1.0, -1.0
+      # Top Face
+      -1.0,  1.0, -1.0
+      -1.0,  1.0,  1.0
+       1.0,  1.0,  1.0
+       1.0,  1.0, -1.0
+      # Bottom Face
+      -1.0, -1.0, -1.0
+       1.0, -1.0, -1.0
+       1.0, -1.0,  1.0
+      -1.0, -1.0,  1.0
+      # Right Face
+       1.0, -1.0, -1.0
+       1.0,  1.0, -1.0
+       1.0,  1.0,  1.0
+       1.0, -1.0,  1.0
+      # Left Face
+      -1.0, -1.0, -1.0
+      -1.0, -1.0,  1.0
+      -1.0,  1.0,  1.0
+      -1.0,  1.0, -1.0
+    ]
+
+    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(vertices), @gl.STATIC_DRAW
+    @cubeVertexPositionBuffer.itemSize = 3
+    @cubeVertexPositionBuffer.numItems = 24
+
+    @cubeVertexColorBuffer = @gl.createBuffer()
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexColorBuffer
+
+    colors = [
+      [1.0, 0.0, 0.0, 1.0] # Front Face
+      [1.0, 1.0, 0.0, 1.0] # Back Face
+      [0.0, 1.0, 0.0, 1.0] # Top Face
+      [1.0, 0.5, 0.5, 1.0] # Bottom Face
+      [1.0, 0.0, 1.0, 1.0] # Right Face
+      [0.0, 0.0, 1.0, 1.0] # Left Face
+    ]
+    unpacked_colors = _.flatten _.map colors, (color) => 
+      _.map [0..3], => color
+
+    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(unpacked_colors), @gl.STATIC_DRAW
+    @cubeVertexColorBuffer.itemSize = 4
+    @cubeVertexColorBuffer.numItems = 24
+
+    @cubeVertexIndexBuffer = @gl.createBuffer()
+    @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
+    cubeVertexIndeces = [
+      0,  1,  2,    0,  2,  3   # Front Face
+      4,  5,  6,    4,  6,  7   # Back Face
+      8,  9,  10,   8,  10, 11  # Top Face
+      12, 13, 14,   12, 14, 15  # Botom Face
+      16, 17, 18,   16, 18, 19  # Right Face
+      20, 21, 22,   20, 22, 23  # Left Face
+    ]
+    @gl.bufferData @gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndeces), @gl.STATIC_DRAW
+    @cubeVertexIndexBuffer.itemSize = 1
+    @cubeVertexIndexBuffer.numItems = 36
 
   _initGL: =>
     try
@@ -97,27 +180,56 @@ class window.DisplayWebGLView
       alert "Could not initialise WebGL"
     gl
 
-  _initSquare: =>
-    @squareVertexPositionBuffer = @gl.createBuffer()
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @squareVertexPositionBuffer
+  _initPyramid: =>
+    @pyramidVertexPositionBuffer = @gl.createBuffer()
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @pyramidVertexPositionBuffer
 
     vertices = [
-       1.0,  1.0,  0.0
-      -1.0,  1.0,  0.0
-       1.0, -1.0,  0.0
-      -1.0, -1.0,  0.0
+      # Front Face
+       0.0,  1.0,  0.0
+      -1.0, -1.0,  1.0
+       1.0, -1.0,  1.0
+      # Right Face
+       0.0,  1.0,  0.0
+       1.0, -1.0,  1.0
+       1.0, -1.0, -1.0
+      # Back Face
+       0.0,  1.0,  0.0
+       1.0, -1.0, -1.0
+      -1.0, -1.0, -1.0
+      # Left Face
+       0.0,  1.0,  0.0
+      -1.0, -1.0, -1.0
+      -1.0, -1.0,  1.0
     ]
 
     @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(vertices), @gl.STATIC_DRAW
-    @squareVertexPositionBuffer.itemSize = 3
-    @squareVertexPositionBuffer.numItems = 4
+    @pyramidVertexPositionBuffer.itemSize = 3
+    @pyramidVertexPositionBuffer.numItems = 12
 
-    @squareVertexColorBuffer = @gl.createBuffer()
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @squareVertexColorBuffer
-    colors = _.flatten _.map [0..3], => [0.5, 0.5, 1.0, 1.0]
+    @pyramidVertexColorBuffer = @gl.createBuffer()
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @pyramidVertexColorBuffer
+    colors = [
+      # Front Face
+      1.0, 0.0, 0.0, 1.0
+      0.0, 1.0, 0.0, 1.0
+      0.0, 0.0, 1.0, 1.0
+      # Right Face
+      1.0, 0.0, 0.0, 1.0
+      0.0, 0.0, 1.0, 1.0
+      0.0, 1.0, 0.0, 1.0
+      # Back Face
+      1.0, 0.0, 0.0, 1.0
+      0.0, 1.0, 0.0, 1.0
+      0.0, 0.0, 1.0, 1.0
+      # Left Face
+      1.0, 0.0, 0.0, 1.0
+      0.0, 0.0, 1.0, 1.0
+      0.0, 1.0, 0.0, 1.0
+    ]
     @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(colors), @gl.STATIC_DRAW
-    @squareVertexColorBuffer.itemSize = 4
-    @squareVertexColorBuffer.numItems = 4
+    @pyramidVertexColorBuffer.itemSize = 4
+    @pyramidVertexColorBuffer.numItems = 12
 
   _initShaders: =>
     @mvMatrix = mat4.create()
@@ -142,31 +254,6 @@ class window.DisplayWebGLView
 
     @shaderProgram.pMatrixUniform  = @gl.getUniformLocation @shaderProgram, "uPMatrix"
     @shaderProgram.mvMatrixUniform = @gl.getUniformLocation @shaderProgram, "uMVMatrix"
-
-  _initTriangle: =>
-    @triangleVertexPositionBuffer = @gl.createBuffer()
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @triangleVertexPositionBuffer
-
-    vertices = [
-       0.0,  1.0,  0.0
-      -1.0, -1.0,  0.0
-       1.0, -1.0,  0.0
-    ]
-
-    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(vertices), @gl.STATIC_DRAW
-    @triangleVertexPositionBuffer.itemSize = 3
-    @triangleVertexPositionBuffer.numItems = 3
-
-    @triangleVertexColorBuffer = @gl.createBuffer()
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @triangleVertexColorBuffer
-    colors = [
-      1.0, 0.0, 0.0, 1.0
-      0.0, 1.0, 0.0, 1.0
-      0.0, 0.0, 1.0, 1.0
-    ]
-    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(colors), @gl.STATIC_DRAW
-    @triangleVertexColorBuffer.itemSize = 4
-    @triangleVertexColorBuffer.numItems = 3
 
   _mvPopMatrix: =>
     throw 'Invalid popMatrix' unless @mvMatrixStack
