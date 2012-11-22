@@ -3,5 +3,5 @@
   var App = require("./server/app");
   
   var app  = new App();
-  app.run(process.env.PORT || 24139);
+  app.run(process.env.PORT || 8000);
 })()
