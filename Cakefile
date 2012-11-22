@@ -43,6 +43,7 @@ build = (watch)->
 
 watch = -> build('w')
 
+task "build", -> build()
 task "watch", -> watch()
 
 task "dev", ->

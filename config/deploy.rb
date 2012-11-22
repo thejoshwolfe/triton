@@ -18,6 +18,8 @@ after "deploy:restart", "deploy:cleanup"
 # If you are using Passenger mod_rails uncomment this:
 namespace :deploy do
   task :finalize_update do
+    run "cd #{current_path} && /opt/node/bin/npm install"
+    run "cd #{current_path} && /opt/node/bin/cake build"
   end
 
   task :start do ; end
