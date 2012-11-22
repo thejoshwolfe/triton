@@ -18,13 +18,13 @@ after "deploy:restart", "deploy:cleanup"
 # If you are using Passenger mod_rails uncomment this:
 namespace :deploy do
   task :finalize_update do
-    run "cd #{current_path} && npm install"
-    run "cd #{current_path} && cake build"
+    run "cd #{current_release} && npm install"
+    run "cd #{current_release} && cake build"
   end
 
   task :start do ; end
   task :stop do ; end
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "touch #{current_path}/tmp/restart.txt"
+    run "touch #{current_release}/tmp/restart.txt"
   end
 end
