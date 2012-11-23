@@ -17,12 +17,14 @@ class window.DisplayWebGLView
     @gl = @_initGL()
     @_initShaders()
     @_initBuffers()
+    @_initTexture()
 
     @gl.clearColor 0.0, 0.0, 0.0, 1.0
     @gl.enable     @gl.DEPTH_TEST
 
-    @rPyramid = 0
-    @rCube    = 0
+    @xRot    = 0
+    @yRot    = 0
+    @zRot    = 0
 
     @_tick()
 
@@ -36,8 +38,9 @@ class window.DisplayWebGLView
     if @lastTime
       elapsed = timeNow - @lastTime
 
-      @rPyramid += (90 * elapsed) / 1000.0
-      @rCube    += (75 * elapsed) / 1000.0
+      @xRot    += (75 * elapsed) / 1000.0
+      @yRot    += (75 * elapsed) / 1000.0
+      @zRot    += (75 * elapsed) / 1000.0
 
     @lastTime = timeNow
 
@@ -54,30 +57,22 @@ class window.DisplayWebGLView
     mat4.translate @mvMatrix, @currentPosition
     @_mvPushMatrix()
 
-    # Pyramid
-    mat4.translate @mvMatrix, [-1.5, 0.0, -7.0]
-    @_mvPushMatrix()
-    mat4.rotate @mvMatrix, @_degToRad(@rPyramid), [0, 1, 0]
-
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @pyramidVertexPositionBuffer
-    @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @pyramidVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
-
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @pyramidVertexColorBuffer
-    @gl.vertexAttribPointer @shaderProgram.vertexColorAttribute, @pyramidVertexColorBuffer.itemSize, @gl.FLOAT, false, 0, 0
-    @_setMatrixUniforms()
-    @gl.drawArrays @gl.TRIANGLES, 0, @pyramidVertexPositionBuffer.numItems
-    @_mvPopMatrix()
-
     # Cube
-    mat4.translate @mvMatrix, [3.0, 0.0, 0.0]
+    mat4.translate @mvMatrix, [0.0, 0.0, -5.0]
     @_mvPushMatrix()
-    mat4.rotate @mvMatrix, @_degToRad(@rCube), [1, 1, 1]
+    mat4.rotate @mvMatrix, @_degToRad(@xRot), [1, 0, 0]
+    mat4.rotate @mvMatrix, @_degToRad(@yRot), [0, 1, 0]
+    mat4.rotate @mvMatrix, @_degToRad(@zRot), [0, 0, 1]
 
     @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
     @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @cubeVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
 
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexColorBuffer
-    @gl.vertexAttribPointer @shaderProgram.vertexColorAttribute, @cubeVertexColorBuffer.itemSize, @gl.FLOAT, false, 0, 0
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexTextureCoordBuffer
+    @gl.vertexAttribPointer @shaderProgram.textureCoordAttribute, @cubeVertexTextureCoordBuffer.itemSize, @gl.FLOAT, false, 0, 0
+
+    @gl.activeTexture @gl.TEXTURE0
+    @gl.bindTexture @gl.TEXTURE_2D, @planetTexture
+    @gl.uniform1i @shaderProgram.samplerUniform, 0
 
     @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
     @_setMatrixUniforms()
@@ -86,7 +81,6 @@ class window.DisplayWebGLView
     @_mvPopMatrix()
 
     @_mvPopMatrix() # End _drawScene
-
 
   _getShader: ($el) =>
     shaderScript = $el[0]
@@ -113,8 +107,15 @@ class window.DisplayWebGLView
 
     shader
 
+  _handleLoadedTexture: (texture) =>
+    @gl.bindTexture @gl.TEXTURE_2D, texture
+    @gl.pixelStorei @gl.UNPACK_FLIP_Y_WEBGL, true
+    @gl.texImage2D @gl.TEXTURE_2D, 0, @gl.RGBA, @gl.RGBA, @gl.UNSIGNED_BYTE, texture.image
+    @gl.texParameteri @gl.TEXTURE_2D, @gl.TEXTURE_MAG_FILTER, @gl.NEAREST
+    @gl.texParameteri @gl.TEXTURE_2D, @gl.TEXTURE_MIN_FILTER, @gl.NEAREST
+    @gl.bindTexture @gl.TEXTURE_2D, null
+
   _initBuffers: =>
-    @_initPyramid()
     @_initCube()
 
   _initCube: =>
@@ -158,23 +159,48 @@ class window.DisplayWebGLView
     @cubeVertexPositionBuffer.itemSize = 3
     @cubeVertexPositionBuffer.numItems = 24
 
-    @cubeVertexColorBuffer = @gl.createBuffer()
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexColorBuffer
+    @cubeVertexTextureCoordBuffer = @gl.createBuffer()
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexTextureCoordBuffer
+    textureCoords = [
+      # Front Face
+      0.0, 0.0
+      1.0, 0.0
+      1.0, 1.0
+      0.0, 1.0
 
-    colors = [
-      [1.0, 0.0, 0.0, 1.0] # Front Face
-      [1.0, 1.0, 0.0, 1.0] # Back Face
-      [0.0, 1.0, 0.0, 1.0] # Top Face
-      [1.0, 0.5, 0.5, 1.0] # Bottom Face
-      [1.0, 0.0, 1.0, 1.0] # Right Face
-      [0.0, 0.0, 1.0, 1.0] # Left Face
+      # Back Face
+      1.0, 0.0
+      1.0, 1.0
+      0.0, 1.0
+      0.0, 0.0
+
+      # Top Face
+      0.0, 1.0
+      0.0, 0.0
+      1.0, 0.0
+      1.0, 1.0
+
+      # Bottom Face
+      1.0, 1.0
+      0.0, 1.0
+      0.0, 0.0
+      1.0, 0.0
+
+      # Right Face
+      1.0, 0.0
+      1.0, 1.0
+      0.0, 1.0
+      0.0, 0.0
+
+      # Left Face
+      0.0, 0.0
+      1.0, 0.0
+      1.0, 1.0
+      0.0, 1.0
     ]
-    unpacked_colors = _.flatten _.map colors, (color) => 
-      _.map [0..3], => color
-
-    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(unpacked_colors), @gl.STATIC_DRAW
-    @cubeVertexColorBuffer.itemSize = 4
-    @cubeVertexColorBuffer.numItems = 24
+    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(textureCoords), @gl.STATIC_DRAW
+    @cubeVertexTextureCoordBuffer.itemSize = 2
+    @cubeVertexTextureCoordBuffer.numItems = 24
 
     @cubeVertexIndexBuffer = @gl.createBuffer()
     @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
@@ -199,57 +225,6 @@ class window.DisplayWebGLView
       alert "Could not initialise WebGL"
     gl
 
-  _initPyramid: =>
-    @pyramidVertexPositionBuffer = @gl.createBuffer()
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @pyramidVertexPositionBuffer
-
-    vertices = [
-      # Front Face
-       0.0,  1.0,  0.0
-      -1.0, -1.0,  1.0
-       1.0, -1.0,  1.0
-      # Right Face
-       0.0,  1.0,  0.0
-       1.0, -1.0,  1.0
-       1.0, -1.0, -1.0
-      # Back Face
-       0.0,  1.0,  0.0
-       1.0, -1.0, -1.0
-      -1.0, -1.0, -1.0
-      # Left Face
-       0.0,  1.0,  0.0
-      -1.0, -1.0, -1.0
-      -1.0, -1.0,  1.0
-    ]
-
-    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(vertices), @gl.STATIC_DRAW
-    @pyramidVertexPositionBuffer.itemSize = 3
-    @pyramidVertexPositionBuffer.numItems = 12
-
-    @pyramidVertexColorBuffer = @gl.createBuffer()
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @pyramidVertexColorBuffer
-    colors = [
-      # Front Face
-      1.0, 0.0, 0.0, 1.0
-      0.0, 1.0, 0.0, 1.0
-      0.0, 0.0, 1.0, 1.0
-      # Right Face
-      1.0, 0.0, 0.0, 1.0
-      0.0, 0.0, 1.0, 1.0
-      0.0, 1.0, 0.0, 1.0
-      # Back Face
-      1.0, 0.0, 0.0, 1.0
-      0.0, 1.0, 0.0, 1.0
-      0.0, 0.0, 1.0, 1.0
-      # Left Face
-      1.0, 0.0, 0.0, 1.0
-      0.0, 0.0, 1.0, 1.0
-      0.0, 1.0, 0.0, 1.0
-    ]
-    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(colors), @gl.STATIC_DRAW
-    @pyramidVertexColorBuffer.itemSize = 4
-    @pyramidVertexColorBuffer.numItems = 12
-
   _initShaders: =>
     @mvMatrix = mat4.create()
     @pMatrix  = mat4.create()
@@ -265,14 +240,23 @@ class window.DisplayWebGLView
     alert "Could not initialise shaders" unless @gl.getProgramParameter @shaderProgram, @gl.LINK_STATUS
 
     @gl.useProgram @shaderProgram
+    
     @shaderProgram.vertexPositionAttribute = @gl.getAttribLocation @shaderProgram, "aVertexPosition"
     @gl.enableVertexAttribArray @shaderProgram.vertexPositionAttribute
 
-    @shaderProgram.vertexColorAttribute = @gl.getAttribLocation @shaderProgram, "aVertexColor"
-    @gl.enableVertexAttribArray @shaderProgram.vertexColorAttribute
+    @shaderProgram.textureCoordAttribute = @gl.getAttribLocation @shaderProgram, "aTextureCoord"
+    @gl.enableVertexAttribArray @shaderProgram.textureCoordAttribute
 
     @shaderProgram.pMatrixUniform  = @gl.getUniformLocation @shaderProgram, "uPMatrix"
     @shaderProgram.mvMatrixUniform = @gl.getUniformLocation @shaderProgram, "uMVMatrix"
+    @shaderProgram.samplerUniform  = @gl.getUniformLocation @shaderProgram, "uSampler"
+
+  _initTexture: =>
+    @planetTexture = @gl.createTexture()
+    @planetTexture.image = new Image()
+    @planetTexture.image.onload = =>
+      @_handleLoadedTexture @planetTexture
+    @planetTexture.image.src = "img/planet.png"
 
   _mvPopMatrix: =>
     throw 'Invalid popMatrix' unless @mvMatrixStack
