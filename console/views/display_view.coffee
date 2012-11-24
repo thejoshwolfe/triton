@@ -12,9 +12,12 @@ class window.DisplayView extends Backbone.View
 
   render: =>
     @$el.html @template @context()
-    @webgl_view.set_canvas @$ 'canvas'
+    $canvas = @$ 'canvas'
+
+    @webgl_view.set_canvas $canvas
     _.delay =>
+      $canvas.attr 'width', $(window).width() - 40
+      $canvas.attr 'height', $(window).height() - 120
       @webgl_view.run()
     , 500
     @$el
-

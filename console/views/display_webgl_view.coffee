@@ -1,7 +1,11 @@
 class window.DisplayWebGLView
 
+  destroy: =>
+    @destroyed = true
+
   run: =>
     @gl = @_initGL()
+    window.gl = @gl
     @_initShaders()
     @_initBuffers()
     @_initTexture()
@@ -98,6 +102,7 @@ class window.DisplayWebGLView
     shader
 
   _handleLoadedTexture: (texture) =>
+    @textureLoaded = true
     @gl.bindTexture @gl.TEXTURE_2D, texture
     @gl.pixelStorei @gl.UNPACK_FLIP_Y_WEBGL, true
     @gl.texImage2D @gl.TEXTURE_2D, 0, @gl.RGBA, @gl.RGBA, @gl.UNSIGNED_BYTE, texture.image
@@ -246,7 +251,7 @@ class window.DisplayWebGLView
     @planetTexture.image = new Image()
     @planetTexture.image.onload = =>
       @_handleLoadedTexture @planetTexture
-    @planetTexture.image.src = "img/planet.png"
+    @planetTexture.image.src = "img/planet.gif"
 
   _mvPopMatrix: =>
     throw 'Invalid popMatrix' unless @mvMatrixStack
@@ -262,8 +267,10 @@ class window.DisplayWebGLView
     @gl.uniformMatrix4fv @shaderProgram.mvMatrixUniform, false, @mvMatrix
 
   _tick: =>
+    return if @destroyed
+
     requestAnimFrame @_tick
-    return unless @world?
+    return unless @world? and @textureLoaded
     @_drawScene()
     @_animate()
 

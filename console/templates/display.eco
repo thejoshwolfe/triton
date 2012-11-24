@@ -1,11 +1,4 @@
-
-<div class="row-fluid">
-  <div class="span4">
-    <h2>Display</h2>
-
-    <canvas style="border: none;" width="800" height="500"></canvas>
-  </div>
-</div>
+<canvas style="border: none;" width="800" height="500"></canvas>
 
 <script id="shader-fs" type="x-shader/x-fragment">
   precision mediump float;
