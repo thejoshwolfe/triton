@@ -14,9 +14,11 @@ module.exports = class World extends Backbone.Model
       @trigger "camera:#{event}", args...
 
   toJSON: =>
-    @update_cube silent: true
+    timestamp = new Date().getTime()
+    @update_cube silent: true, time: timestamp
     _.extend super,
-      camera: @camera.toJSON()
+      camera: @camera.toJSON(time: timestamp)
+      timestamp: timestamp
 
   # Instance Methods
   helm_command: (command) =>
@@ -24,7 +26,7 @@ module.exports = class World extends Backbone.Model
 
   # private methods
   update_cube: (options={}) =>
-    current_time = new Date().getTime()
+    current_time = options.time ? new Date().getTime()
 
     if @last_cube_update?
       elapsed = current_time - @last_cube_update

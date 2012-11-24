@@ -19,12 +19,12 @@ module.exports = class Camera extends Backbone.Model
       else console?.log 'DisplayWebGLView.go: Invalid direction name'
     @set 'velocity', velocity
 
-  toJSON: =>
-    @update_position silent: true
+  toJSON: (options={}) =>
+    @update_position silent: true, time: options.time
     super
 
   update_position: (options={}) =>
-    current_time = new Date().getTime()
+    current_time = options.time ? new Date().getTime()
 
     if @last_position_update?
       elapsed = current_time - @last_position_update

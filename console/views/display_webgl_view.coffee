@@ -15,24 +15,24 @@ class window.DisplayWebGLView
     @canvas = @$canvas.get 0
 
   update_world: (@world) =>
-    @lastTime = new Date().getTime()
+    @world.timestamp = new Date().getTime()
 
   # Protected
 
   _animate: =>
     timeNow = new Date().getTime()
-    if @lastTime
-      elapsed = timeNow - @lastTime
 
-      @world.cube.rotation[0] += @world.cube.angular_velocity[0] * 75 * elapsed / 1000.0
-      @world.cube.rotation[1] += @world.cube.angular_velocity[1] * 75 * elapsed / 1000.0
-      @world.cube.rotation[2] += @world.cube.angular_velocity[2] * 75 * elapsed / 1000.0
+    elapsed = timeNow - @world.timestamp
 
-      @world.camera.position[0] += @world.camera.velocity[0] * elapsed / 1000.0
-      @world.camera.position[1] += @world.camera.velocity[1] * elapsed / 1000.0
-      @world.camera.position[2] += @world.camera.velocity[2] * elapsed / 1000.0
+    @world.cube.rotation[0] += @world.cube.angular_velocity[0] * 75 * elapsed / 1000.0
+    @world.cube.rotation[1] += @world.cube.angular_velocity[1] * 75 * elapsed / 1000.0
+    @world.cube.rotation[2] += @world.cube.angular_velocity[2] * 75 * elapsed / 1000.0
 
-    @lastTime = timeNow
+    @world.camera.position[0] += @world.camera.velocity[0] * elapsed / 1000.0
+    @world.camera.position[1] += @world.camera.velocity[1] * elapsed / 1000.0
+    @world.camera.position[2] += @world.camera.velocity[2] * elapsed / 1000.0
+
+    @world.timestamp = timeNow
 
   _degToRad: (degrees) =>
     degrees * Math.PI / 180
