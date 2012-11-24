@@ -1,10 +1,13 @@
-http     = require 'http'
+Http     = require 'http'
+Path     = require 'path'
+SocketIO = require 'socket.io'
+World    = require 'world'
 express  = require 'express'
-net      = require 'net'
-path     = require 'path'
-socketio = require 'socket.io'
 
 module.exports = class App
+  constructor: (args={}) =>
+    @world = new World()
+
   run: (port) =>
     @web_server port
 
@@ -12,13 +15,13 @@ module.exports = class App
     app = express()
 
     app.configure ->
-      app.use express.static path.join __dirname, '../console'  
+      app.use express.static Path.join __dirname, '../console'  
 
-    server = http.createServer app
+    server = Http.createServer app
     server.listen port 
     console.log "Serving at http://0.0.0.0:#{port}/"
 
-    @io = socketio.listen(server)
+    @io = SocketIO.listen(server)
     @io.set 'log level', 2 # 0: error, 1: warn, 2: info, 3: debug
     @io.sockets.on 'connection', (socket) =>
       socket.on 'helm', (data) =>

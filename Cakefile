@@ -33,7 +33,7 @@ build = (watch)->
     if watch
       watchTree 'console/templates', {ignoreDotFiles: true}, (file_path, curr) ->
         return unless curr?.nlink # file was removed
-        return unless /\.eco$/.exec(file_path)?
+        return unless /\.eco$/.exec(file_path)? # return if this isn't an eco file
         eco_compile file_path
 
     walk('console/templates').on 'file', (root, fileStats, next) ->

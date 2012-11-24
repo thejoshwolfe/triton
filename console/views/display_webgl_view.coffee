@@ -2,15 +2,16 @@ class window.DisplayWebGLView
 
   constructor: ->
     @currentPosition = [0.0, 0.0, 0.0]
+    @currentVelocity = [0.0, 0.0, 0.0]
 
   go: (direction) =>
     switch direction
-      when 'up'      then @currentPosition[1]--
-      when 'down'    then @currentPosition[1]++
-      when 'left'    then @currentPosition[0]++
-      when 'right'   then @currentPosition[0]--
-      when 'forward' then @currentPosition[2]++
-      when 'back'    then @currentPosition[2]--
+      when 'up'      then @currentVelocity[1]--
+      when 'down'    then @currentVelocity[1]++
+      when 'left'    then @currentVelocity[0]++
+      when 'right'   then @currentVelocity[0]--
+      when 'forward' then @currentVelocity[2]++
+      when 'back'    then @currentVelocity[2]--
       else console?.log 'DisplayWebGLView.go: Invalid direction name'
 
   run: =>
@@ -41,6 +42,10 @@ class window.DisplayWebGLView
       @xRot    += (75 * elapsed) / 1000.0
       @yRot    += (75 * elapsed) / 1000.0
       @zRot    += (75 * elapsed) / 1000.0
+
+      @currentPosition[0] += @currentVelocity[0] * elapsed / 1000
+      @currentPosition[1] += @currentVelocity[1] * elapsed / 1000
+      @currentPosition[2] += @currentVelocity[2] * elapsed / 1000
 
     @lastTime = timeNow
 

@@ -18,7 +18,7 @@ after "deploy:restart", "deploy:cleanup"
 # If you are using Passenger mod_rails uncomment this:
 namespace :deploy do
   task :finalize_update do
-    run "cd #{current_release} && npm install"
+    run "cd #{current_release} && npm --silent install"
     run "cd #{current_release} && cake build"
   end
 
