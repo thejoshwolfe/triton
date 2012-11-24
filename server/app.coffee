@@ -29,6 +29,10 @@ module.exports = class App
         @world.helm_command data.command
       socket.on 'request_world', =>
         socket.emit 'world', @world.toJSON()
+      socket.on 'reset', =>
+        @world = new World()
+        @world.on 'all', @send_world
+        @send_world()
 
   # Protected
   send_world: =>

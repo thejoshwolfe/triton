@@ -20,11 +20,7 @@ module.exports = class World extends Backbone.Model
 
   # Instance Methods
   helm_command: (command) =>
-    if command == 'reset'
-      @camera = new Camera()
-      @trigger 'reset'
-    else
-      @camera.go command
+    @camera.go command
 
   # private methods
   update_cube: (options={}) =>

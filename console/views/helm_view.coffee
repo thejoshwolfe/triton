@@ -39,7 +39,7 @@ class window.HelmView extends Backbone.View
     @emit 'back'
 
   click_reset: =>
-    @emit 'reset'
+    window.socket.emit 'reset'
 
   # Instance Methods
   emit: (command) =>
