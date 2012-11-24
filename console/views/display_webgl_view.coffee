@@ -1,19 +1,5 @@
 class window.DisplayWebGLView
 
-  constructor: ->
-    @currentPosition = [0.0, 0.0, 0.0]
-    @currentVelocity = [0.0, 0.0, 0.0]
-
-  go: (direction) =>
-    switch direction
-      when 'up'      then @currentVelocity[1]--
-      when 'down'    then @currentVelocity[1]++
-      when 'left'    then @currentVelocity[0]++
-      when 'right'   then @currentVelocity[0]--
-      when 'forward' then @currentVelocity[2]++
-      when 'back'    then @currentVelocity[2]--
-      else console?.log 'DisplayWebGLView.go: Invalid direction name'
-
   run: =>
     @gl = @_initGL()
     @_initShaders()
@@ -32,6 +18,8 @@ class window.DisplayWebGLView
   set_canvas: (@$canvas) =>
     @canvas = @$canvas.get 0
 
+  update_world: (@world) =>
+
   # Protected
 
   _animate: =>
@@ -42,10 +30,6 @@ class window.DisplayWebGLView
       @xRot    += (75 * elapsed) / 1000.0
       @yRot    += (75 * elapsed) / 1000.0
       @zRot    += (75 * elapsed) / 1000.0
-
-      @currentPosition[0] += @currentVelocity[0] * elapsed / 1000
-      @currentPosition[1] += @currentVelocity[1] * elapsed / 1000
-      @currentPosition[2] += @currentVelocity[2] * elapsed / 1000
 
     @lastTime = timeNow
 
@@ -59,7 +43,7 @@ class window.DisplayWebGLView
     mat4.identity  @mvMatrix
 
     # Camera Movement
-    mat4.translate @mvMatrix, @currentPosition
+    mat4.translate @mvMatrix, @world.camera.position
     @_mvPushMatrix()
 
     # Cube
@@ -278,5 +262,6 @@ class window.DisplayWebGLView
 
   _tick: =>
     requestAnimFrame @_tick
+    return unless @world?
     @_drawScene()
     @_animate()

@@ -1,12 +1,13 @@
 Http     = require 'http'
 Path     = require 'path'
 SocketIO = require 'socket.io'
-World    = require 'world'
+World    = require './world'
 express  = require 'express'
 
 module.exports = class App
-  constructor: (args={}) =>
+  constructor: (args={}) ->
     @world = new World()
+    @world.on 'all', @send_world
 
   run: (port) =>
     @web_server port
@@ -25,10 +26,12 @@ module.exports = class App
     @io.set 'log level', 2 # 0: error, 1: warn, 2: info, 3: debug
     @io.sockets.on 'connection', (socket) =>
       socket.on 'helm', (data) =>
-        console.log "helm says: #{data.command}!"
-        @move data.command
+        @world.helm_command data.command
+      socket.on 'request_world', =>
+        socket.emit 'world', @world.toJSON()
 
   # Protected
-  move: (direction) =>
-    @io.sockets.emit 'display', direction: direction
+  send_world: =>
+    return unless @io?
+    @io.sockets.emit 'world', @world.toJSON()
 
