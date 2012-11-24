@@ -9,16 +9,13 @@ class window.DisplayWebGLView
     @gl.clearColor 0.0, 0.0, 0.0, 1.0
     @gl.enable     @gl.DEPTH_TEST
 
-    @xRot    = 0
-    @yRot    = 0
-    @zRot    = 0
-
     @_tick()
 
   set_canvas: (@$canvas) =>
     @canvas = @$canvas.get 0
 
   update_world: (@world) =>
+    @lastTime = new Date().getTime()
 
   # Protected
 
@@ -27,9 +24,13 @@ class window.DisplayWebGLView
     if @lastTime
       elapsed = timeNow - @lastTime
 
-      @xRot    += (75 * elapsed) / 1000.0
-      @yRot    += (75 * elapsed) / 1000.0
-      @zRot    += (75 * elapsed) / 1000.0
+      @world.cube.rotation[0] += @world.cube.angular_velocity[0] * 75 * elapsed / 1000.0
+      @world.cube.rotation[1] += @world.cube.angular_velocity[1] * 75 * elapsed / 1000.0
+      @world.cube.rotation[2] += @world.cube.angular_velocity[2] * 75 * elapsed / 1000.0
+
+      @world.camera.position[0] += @world.camera.velocity[0] * elapsed / 1000.0
+      @world.camera.position[1] += @world.camera.velocity[1] * elapsed / 1000.0
+      @world.camera.position[2] += @world.camera.velocity[2] * elapsed / 1000.0
 
     @lastTime = timeNow
 
@@ -49,9 +50,9 @@ class window.DisplayWebGLView
     # Cube
     mat4.translate @mvMatrix, [0.0, 0.0, -5.0]
     @_mvPushMatrix()
-    mat4.rotate @mvMatrix, @_degToRad(@xRot), [1, 0, 0]
-    mat4.rotate @mvMatrix, @_degToRad(@yRot), [0, 1, 0]
-    mat4.rotate @mvMatrix, @_degToRad(@zRot), [0, 0, 1]
+    mat4.rotate @mvMatrix, @_degToRad(@world.cube.rotation[0]), [1, 0, 0]
+    mat4.rotate @mvMatrix, @_degToRad(@world.cube.rotation[1]), [0, 1, 0]
+    mat4.rotate @mvMatrix, @_degToRad(@world.cube.rotation[2]), [0, 0, 1]
 
     @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
     @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @cubeVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
@@ -265,3 +266,4 @@ class window.DisplayWebGLView
     return unless @world?
     @_drawScene()
     @_animate()
+
