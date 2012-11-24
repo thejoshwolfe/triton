@@ -7,6 +7,7 @@ module.exports = class World extends Backbone.Model
     cube:
       rotation: [0,0,0]
       angular_velocity: [1,1,1]
+
   initialize: (options={}) =>
     @camera = new Camera()
     @camera.on 'all', (event, args...) =>
@@ -19,7 +20,11 @@ module.exports = class World extends Backbone.Model
 
   # Instance Methods
   helm_command: (command) =>
-    @camera.go command
+    if command == 'reset'
+      @camera = new Camera()
+      @trigger 'reset'
+    else
+      @camera.go command
 
   # private methods
   update_cube: (options={}) =>

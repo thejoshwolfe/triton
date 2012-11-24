@@ -16,6 +16,7 @@ class window.HelmView extends Backbone.View
     'click .right'  : 'click_right'
     'click .forward': 'click_forward'
     'click .back'   : 'click_back'
+    'click .reset'  : 'click_reset'
 
   # Event Handlers
 
@@ -36,6 +37,9 @@ class window.HelmView extends Backbone.View
 
   click_back: =>
     @emit 'back'
+
+  click_reset: =>
+    @emit 'reset'
 
   # Instance Methods
   emit: (command) =>

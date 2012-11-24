@@ -39,4 +39,12 @@
       <i class="icon-arrow-down"></i>
     </button>
   </div>
+
+  <div class="helm-controls span4">
+    <h4>Settings</h4>
+
+    <button class="btn btn-large btn-danger reset">
+      <i class="icon-off icon-white"></i> Reset
+    </button>
+  </div>
 </div>
