@@ -4,16 +4,16 @@ class window.DisplayWebGLView
     @destroyed = true
 
   run: =>
-    @gl = @_initGL()
+    @gl = @initGL()
     window.gl = @gl
-    @_initShaders()
-    @_initBuffers()
-    @_initTexture()
+    @initShaders()
+    @initBuffers()
+    @initTexture()
 
     @gl.clearColor 0.0, 0.0, 0.0, 1.0
     @gl.enable     @gl.DEPTH_TEST
 
-    @_tick()
+    @tick()
 
   set_canvas: (@$canvas) =>
     @canvas = @$canvas.get 0
@@ -23,7 +23,7 @@ class window.DisplayWebGLView
 
   # Protected
 
-  _animate: =>
+  animate: =>
     timeNow = new Date().getTime()
 
     elapsed = timeNow - @world.timestamp
@@ -38,10 +38,10 @@ class window.DisplayWebGLView
 
     @world.timestamp = timeNow
 
-  _degToRad: (degrees) =>
+  degToRad: (degrees) =>
     degrees * Math.PI / 180
 
-  _drawScene: =>
+  drawScene: =>
     @gl.viewport 0, 0, @gl.viewportWidth, @gl.viewportHeight
     @gl.clear @gl.COLOR_BUFFER_BIT | @gl.DEPTH_BUFFER_BIT
     mat4.perspective 45, @gl.viewportWidth / @gl.viewportHeight, 0.1, 100.0, @pMatrix
@@ -49,14 +49,14 @@ class window.DisplayWebGLView
 
     # Camera Movement
     mat4.translate @mvMatrix, @world.camera.position
-    @_mvPushMatrix()
+    @mvPushMatrix()
 
     # Cube
     mat4.translate @mvMatrix, [0.0, 0.0, -5.0]
-    @_mvPushMatrix()
-    mat4.rotate @mvMatrix, @_degToRad(@world.cube.rotation[0]), [1, 0, 0]
-    mat4.rotate @mvMatrix, @_degToRad(@world.cube.rotation[1]), [0, 1, 0]
-    mat4.rotate @mvMatrix, @_degToRad(@world.cube.rotation[2]), [0, 0, 1]
+    @mvPushMatrix()
+    mat4.rotate @mvMatrix, @degToRad(@world.cube.rotation[0]), [1, 0, 0]
+    mat4.rotate @mvMatrix, @degToRad(@world.cube.rotation[1]), [0, 1, 0]
+    mat4.rotate @mvMatrix, @degToRad(@world.cube.rotation[2]), [0, 0, 1]
 
     @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
     @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @cubeVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
@@ -69,14 +69,14 @@ class window.DisplayWebGLView
     @gl.uniform1i @shaderProgram.samplerUniform, 0
 
     @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
-    @_setMatrixUniforms()
+    @setMatrixUniforms()
     @gl.drawElements @gl.TRIANGLES, @cubeVertexIndexBuffer.numItems, @gl.UNSIGNED_SHORT, 0
 
-    @_mvPopMatrix()
+    @mvPopMatrix()
 
-    @_mvPopMatrix() # End _drawScene
+    @mvPopMatrix() # End drawScene
 
-  _getShader: ($el) =>
+  getShader: ($el) =>
     shaderScript = $el[0]
     return unless shaderScript?
 
@@ -101,7 +101,7 @@ class window.DisplayWebGLView
 
     shader
 
-  _handleLoadedTexture: (texture) =>
+  handleLoadedTexture: (texture) =>
     @textureLoaded = true
     @gl.bindTexture @gl.TEXTURE_2D, texture
     @gl.pixelStorei @gl.UNPACK_FLIP_Y_WEBGL, true
@@ -111,10 +111,10 @@ class window.DisplayWebGLView
     @gl.generateMipmap @gl.TEXTURE_2D
     @gl.bindTexture @gl.TEXTURE_2D, null
 
-  _initBuffers: =>
-    @_initCube()
+  initBuffers: =>
+    @initCube()
 
-  _initCube: =>
+  initCube: =>
     @cubeVertexPositionBuffer = @gl.createBuffer()
     @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
 
@@ -198,6 +198,50 @@ class window.DisplayWebGLView
     @cubeVertexTextureCoordBuffer.itemSize = 2
     @cubeVertexTextureCoordBuffer.numItems = 24
 
+    @cubeVertexNormalBuffer = @gl.createBuffer()
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexNormalBuffer
+    vertexNomals = [
+      # Front face
+       0.0,  0.0,  1.0
+       0.0,  0.0,  1.0
+       0.0,  0.0,  1.0
+       0.0,  0.0,  1.0
+
+      # Back face
+       0.0,  0.0, -1.0
+       0.0,  0.0, -1.0
+       0.0,  0.0, -1.0
+       0.0,  0.0, -1.0
+
+      # Top face
+       0.0,  1.0,  0.0
+       0.0,  1.0,  0.0
+       0.0,  1.0,  0.0
+       0.0,  1.0,  0.0
+
+      # Bottom face
+       0.0, -1.0,  0.0
+       0.0, -1.0,  0.0
+       0.0, -1.0,  0.0
+       0.0, -1.0,  0.0
+
+      # Right face
+       1.0,  0.0,  0.0
+       1.0,  0.0,  0.0
+       1.0,  0.0,  0.0
+       1.0,  0.0,  0.0
+
+      # Left face
+      -1.0,  0.0,  0.0
+      -1.0,  0.0,  0.0
+      -1.0,  0.0,  0.0
+      -1.0,  0.0,  0.0
+    ]
+
+    @gl.bufferData, @gl.ARRAY_BUFFER, new Float32Array(vertexNomals), @gl.STATIC_DRAW
+    @cubeVertexNormalBuffer.itemSize = 3
+    @cubeVertexNormalBuffer.numItems = 24
+
     @cubeVertexIndexBuffer = @gl.createBuffer()
     @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
     cubeVertexIndeces = [
@@ -212,7 +256,7 @@ class window.DisplayWebGLView
     @cubeVertexIndexBuffer.itemSize = 1
     @cubeVertexIndexBuffer.numItems = 36
 
-  _initGL: =>
+  initGL: =>
     try
       gl = @canvas.getContext "experimental-webgl"
       gl.viewportWidth  = @canvas.width
@@ -221,13 +265,13 @@ class window.DisplayWebGLView
       alert "Could not initialise WebGL"
     gl
 
-  _initShaders: =>
+  initShaders: =>
     @mvMatrix = mat4.create()
     @pMatrix  = mat4.create()
     @mvMatrixStack = []
 
-    fragmentShader = @_getShader $("#shader-fs")
-    vertexShader   = @_getShader $("#shader-vs")
+    fragmentShader = @getShader $("#shader-fs")
+    vertexShader   = @getShader $("#shader-vs")
 
     @shaderProgram = @gl.createProgram()
     @gl.attachShader @shaderProgram, fragmentShader
@@ -247,31 +291,31 @@ class window.DisplayWebGLView
     @shaderProgram.mvMatrixUniform = @gl.getUniformLocation @shaderProgram, "uMVMatrix"
     @shaderProgram.samplerUniform  = @gl.getUniformLocation @shaderProgram, "uSampler"
 
-  _initTexture: =>
+  initTexture: =>
     @planetTexture = @gl.createTexture()
     @planetTexture.image = new Image()
     @planetTexture.image.onload = =>
-      @_handleLoadedTexture @planetTexture
+      @handleLoadedTexture @planetTexture
     @planetTexture.image.src = "img/crate.gif"
 
-  _mvPopMatrix: =>
+  mvPopMatrix: =>
     throw 'Invalid popMatrix' unless @mvMatrixStack
     @mvMatrix = @mvMatrixStack.pop()
 
-  _mvPushMatrix: =>
+  mvPushMatrix: =>
     copy = mat4.create()
     mat4.set @mvMatrix, copy
     @mvMatrixStack.push copy
 
-  _setMatrixUniforms: =>
+  setMatrixUniforms: =>
     @gl.uniformMatrix4fv @shaderProgram.pMatrixUniform, false, @pMatrix
     @gl.uniformMatrix4fv @shaderProgram.mvMatrixUniform, false, @mvMatrix
 
-  _tick: =>
+  tick: =>
     return if @destroyed
 
-    requestAnimFrame @_tick
+    requestAnimFrame @tick
     return unless @world? and @textureLoaded
-    @_drawScene()
-    @_animate()
+    @drawScene()
+    @animate()
 
