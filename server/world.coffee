@@ -4,6 +4,9 @@ _ = require 'underscore'
 
 module.exports = class World extends Backbone.Model
   defaults:
+    light_direction:   [-0.25, -0.25, -1.0]
+    ambient_color:     [ 0.2,   0.2,   0.2]
+    directional_color: [ 0.8,   0.8,   0.8]
     cube:
       rotation: [0,0,0]
       angular_velocity: [0,1,0]

@@ -1,5 +1,4 @@
 class window.DisplayWebGLView
-
   destroy: =>
     @destroyed = true
 
@@ -61,12 +60,23 @@ class window.DisplayWebGLView
     @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
     @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @cubeVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
 
+    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexNormalBuffer
+    @gl.vertexAttribPointer @shaderProgram.vertexNormalAttribute, @cubeVertexNormalBuffer.itemSize, @gl.FLOAT, false, 0, 0
+
     @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexTextureCoordBuffer
     @gl.vertexAttribPointer @shaderProgram.textureCoordAttribute, @cubeVertexTextureCoordBuffer.itemSize, @gl.FLOAT, false, 0, 0
 
     @gl.activeTexture @gl.TEXTURE0
-    @gl.bindTexture @gl.TEXTURE_2D, @planetTexture
+    @gl.bindTexture @gl.TEXTURE_2D, @crateTexture
     @gl.uniform1i @shaderProgram.samplerUniform, 0
+
+    @gl.uniform3f @shaderProgram.ambientColorUniform, @world.ambient_color...
+    adjustedLD = vec3.create()
+    vec3.normalize @world.light_direction, adjustedLD
+    vec3.scale adjustedLD, -1
+    @gl.uniform3fv @shaderProgram.lightingDirectionUniform, adjustedLD
+
+    @gl.uniform3f @shaderProgram.directionalColorUniform, @world.directional_color...
 
     @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
     @setMatrixUniforms()
@@ -284,19 +294,27 @@ class window.DisplayWebGLView
     @shaderProgram.vertexPositionAttribute = @gl.getAttribLocation @shaderProgram, "aVertexPosition"
     @gl.enableVertexAttribArray @shaderProgram.vertexPositionAttribute
 
+    @shaderProgram.vertexNormalAttribute = @gl.getAttribLocation @shaderProgram, "aVertexNormal"
+    @gl.enableVertexAttribArray @shaderProgram.vertexNormalAttribute
+
     @shaderProgram.textureCoordAttribute = @gl.getAttribLocation @shaderProgram, "aTextureCoord"
     @gl.enableVertexAttribArray @shaderProgram.textureCoordAttribute
 
-    @shaderProgram.pMatrixUniform  = @gl.getUniformLocation @shaderProgram, "uPMatrix"
-    @shaderProgram.mvMatrixUniform = @gl.getUniformLocation @shaderProgram, "uMVMatrix"
-    @shaderProgram.samplerUniform  = @gl.getUniformLocation @shaderProgram, "uSampler"
+    @shaderProgram.pMatrixUniform           = @gl.getUniformLocation @shaderProgram, "uPMatrix"
+    @shaderProgram.mvMatrixUniform          = @gl.getUniformLocation @shaderProgram, "uMVMatrix"
+    @shaderProgram.nMatrixUniform           = @gl.getUniformLocation @shaderProgram, "uNMatrix"
+    @shaderProgram.samplerUniform           = @gl.getUniformLocation @shaderProgram, "uSampler"
+    @shaderProgram.ambientColorUniform      = @gl.getUniformLocation @shaderProgram, "uAmbientColor"
+    @shaderProgram.lightingDirectionUniform = @gl.getUniformLocation @shaderProgram, "uLightingDirection"
+    @shaderProgram.directionalColorUniform  = @gl.getUniformLocation @shaderProgram, "uDirectionalColor"
+
 
   initTexture: =>
-    @planetTexture = @gl.createTexture()
-    @planetTexture.image = new Image()
-    @planetTexture.image.onload = =>
-      @handleLoadedTexture @planetTexture
-    @planetTexture.image.src = "img/crate.gif"
+    @crateTexture = @gl.createTexture()
+    @crateTexture.image = new Image()
+    @crateTexture.image.onload = =>
+      @handleLoadedTexture @crateTexture
+    @crateTexture.image.src = "img/crate.gif"
 
   mvPopMatrix: =>
     throw 'Invalid popMatrix' unless @mvMatrixStack
@@ -310,6 +328,11 @@ class window.DisplayWebGLView
   setMatrixUniforms: =>
     @gl.uniformMatrix4fv @shaderProgram.pMatrixUniform, false, @pMatrix
     @gl.uniformMatrix4fv @shaderProgram.mvMatrixUniform, false, @mvMatrix
+
+    normalMatrix = mat3.create()
+    mat4.toInverseMat3 @mvMatrix, normalMatrix
+    mat3.transpose normalMatrix
+    @gl.uniformMatrix3fv @shaderProgram.nMatrixUniform, false, normalMatrix
 
   tick: =>
     return if @destroyed
