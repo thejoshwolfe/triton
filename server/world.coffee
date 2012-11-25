@@ -6,7 +6,7 @@ module.exports = class World extends Backbone.Model
   defaults:
     cube:
       rotation: [0,0,0]
-      angular_velocity: [1,1,1]
+      angular_velocity: [0,1,0]
 
   initialize: (options={}) =>
     @camera = new Camera()

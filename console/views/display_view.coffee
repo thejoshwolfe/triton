@@ -21,3 +21,4 @@ class window.DisplayView extends Backbone.View
       @webgl_view.run()
     , 500
     @$el
+
