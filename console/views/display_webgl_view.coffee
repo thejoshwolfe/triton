@@ -238,7 +238,7 @@ class window.DisplayWebGLView
       -1.0,  0.0,  0.0
     ]
 
-    @gl.bufferData, @gl.ARRAY_BUFFER, new Float32Array(vertexNomals), @gl.STATIC_DRAW
+    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(vertexNomals), @gl.STATIC_DRAW
     @cubeVertexNormalBuffer.itemSize = 3
     @cubeVertexNormalBuffer.numItems = 24
 
