@@ -27,13 +27,10 @@ class window.DisplayWebGLView
 
     elapsed = timeNow - @world.timestamp
 
-    @world.cube.rotation[0] += @world.cube.angular_velocity[0] * 75 * elapsed / 1000.0
-    @world.cube.rotation[1] += @world.cube.angular_velocity[1] * 75 * elapsed / 1000.0
-    @world.cube.rotation[2] += @world.cube.angular_velocity[2] * 75 * elapsed / 1000.0
-
-    @world.camera.position[0] += @world.camera.velocity[0] * elapsed / 1000.0
-    @world.camera.position[1] += @world.camera.velocity[1] * elapsed / 1000.0
-    @world.camera.position[2] += @world.camera.velocity[2] * elapsed / 1000.0
+    for i in [0..2]
+      @world.cube.rotation[i] += @world.cube.angular_velocity[i] * elapsed
+    for i in [0..2]
+      @world.camera.position[i] += @world.camera.velocity[i] * elapsed
 
     @world.timestamp = timeNow
 

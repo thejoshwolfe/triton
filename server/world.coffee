@@ -9,7 +9,7 @@ module.exports = class World extends Backbone.Model
     directional_color: [ 0.8,   0.8,   0.8]
     cube:
       rotation: [0,0,0]
-      angular_velocity: [0,1,0]
+      angular_velocity: [0,0.01,0]
 
   initialize: (options={}) =>
     @camera = new Camera()
@@ -34,9 +34,8 @@ module.exports = class World extends Backbone.Model
     if @last_cube_update?
       elapsed = current_time - @last_cube_update
       cube = _.clone @get 'cube'
-      cube.rotation[0] += cube.angular_velocity[0] * 75 * elapsed / 1000.0
-      cube.rotation[1] += cube.angular_velocity[1] * 75 * elapsed / 1000.0
-      cube.rotation[2] += cube.angular_velocity[2] * 75 * elapsed / 1000.0
+      for i in [0..2]
+        cube.rotation[i] += cube.angular_velocity[i] * elapsed
       @set {cube: cube}, silent: options.silent
 
     @last_cube_update = current_time
