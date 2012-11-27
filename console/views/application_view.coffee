@@ -10,16 +10,21 @@ class window.ApplicationView extends Backbone.View
     @child_view = null
     $('.nav-collapse li').removeClass('active')
     callback()
-    
+
   navigate_to_display: (callback=->) =>
     $('.nav-collapse li.display').addClass('active')
     @child_view = new DisplayView()
     @render()
     callback()
-    
 
   navigate_to_helm: (callback=->) =>
     $('.nav-collapse li.helm').addClass('active')
     @child_view = new HelmView()
+    @render()
+    callback()
+
+  navigate_to_minimap: (callback=->) =>
+    $('.nav-collapse li.minimap').addClass('active')
+    @child_view = new MinimapView()
     @render()
     callback()
