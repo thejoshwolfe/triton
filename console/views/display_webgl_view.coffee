@@ -27,8 +27,9 @@ class window.DisplayWebGLView
 
     elapsed = timeNow - @world.timestamp
 
-    for i in [0..2]
-      @world.cube.rotation[i] += @world.cube.angular_velocity[i] * elapsed
+    for planet in @world.planets
+      for i in [0..2]
+        planet.rotation[i] += planet.angular_velocity[i] * elapsed
     for i in [0..2]
       @world.camera.position[i] += @world.camera.velocity[i] * elapsed
 
@@ -41,45 +42,47 @@ class window.DisplayWebGLView
     @gl.viewport 0, 0, @gl.viewportWidth, @gl.viewportHeight
     @gl.clear @gl.COLOR_BUFFER_BIT | @gl.DEPTH_BUFFER_BIT
     mat4.perspective 45, @gl.viewportWidth / @gl.viewportHeight, 0.1, 100.0, @pMatrix
-    mat4.identity  @mvMatrix
+    mat4.identity @mvMatrix
 
     # Camera Movement
     mat4.translate @mvMatrix, @world.camera.position
     @mvPushMatrix()
 
-    # Cube
+    # Planets
     mat4.translate @mvMatrix, [0.0, 0.0, -5.0]
-    @mvPushMatrix()
-    mat4.rotate @mvMatrix, @degToRad(@world.cube.rotation[0]), [1, 0, 0]
-    mat4.rotate @mvMatrix, @degToRad(@world.cube.rotation[1]), [0, 1, 0]
-    mat4.rotate @mvMatrix, @degToRad(@world.cube.rotation[2]), [0, 0, 1]
+    for planet in @world.planets
+      @mvPushMatrix()
+      mat4.translate @mvMatrix, planet.position
+      mat4.rotate @mvMatrix, @degToRad(planet.rotation[0]), [1, 0, 0]
+      mat4.rotate @mvMatrix, @degToRad(planet.rotation[1]), [0, 1, 0]
+      mat4.rotate @mvMatrix, @degToRad(planet.rotation[2]), [0, 0, 1]
 
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
-    @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @cubeVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
+      @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
+      @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @cubeVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
 
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexNormalBuffer
-    @gl.vertexAttribPointer @shaderProgram.vertexNormalAttribute, @cubeVertexNormalBuffer.itemSize, @gl.FLOAT, false, 0, 0
+      @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexNormalBuffer
+      @gl.vertexAttribPointer @shaderProgram.vertexNormalAttribute, @cubeVertexNormalBuffer.itemSize, @gl.FLOAT, false, 0, 0
 
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexTextureCoordBuffer
-    @gl.vertexAttribPointer @shaderProgram.textureCoordAttribute, @cubeVertexTextureCoordBuffer.itemSize, @gl.FLOAT, false, 0, 0
+      @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexTextureCoordBuffer
+      @gl.vertexAttribPointer @shaderProgram.textureCoordAttribute, @cubeVertexTextureCoordBuffer.itemSize, @gl.FLOAT, false, 0, 0
 
-    @gl.activeTexture @gl.TEXTURE0
-    @gl.bindTexture @gl.TEXTURE_2D, @crateTexture
-    @gl.uniform1i @shaderProgram.samplerUniform, 0
+      @gl.activeTexture @gl.TEXTURE0
+      @gl.bindTexture @gl.TEXTURE_2D, @crateTexture
+      @gl.uniform1i @shaderProgram.samplerUniform, 0
 
-    @gl.uniform3f @shaderProgram.ambientColorUniform, @world.ambient_color...
-    adjustedLD = vec3.create()
-    vec3.normalize @world.light_direction, adjustedLD
-    vec3.scale adjustedLD, -1
-    @gl.uniform3fv @shaderProgram.lightingDirectionUniform, adjustedLD
+      @gl.uniform3f @shaderProgram.ambientColorUniform, @world.ambient_color...
+      adjustedLD = vec3.create()
+      vec3.normalize @world.light_direction, adjustedLD
+      vec3.scale adjustedLD, -1
+      @gl.uniform3fv @shaderProgram.lightingDirectionUniform, adjustedLD
 
-    @gl.uniform3f @shaderProgram.directionalColorUniform, @world.directional_color...
+      @gl.uniform3f @shaderProgram.directionalColorUniform, @world.directional_color...
 
-    @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
-    @setMatrixUniforms()
-    @gl.drawElements @gl.TRIANGLES, @cubeVertexIndexBuffer.numItems, @gl.UNSIGNED_SHORT, 0
+      @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
+      @setMatrixUniforms()
+      @gl.drawElements @gl.TRIANGLES, @cubeVertexIndexBuffer.numItems, @gl.UNSIGNED_SHORT, 0
 
-    @mvPopMatrix()
+      @mvPopMatrix()
 
     @mvPopMatrix() # End drawScene
 

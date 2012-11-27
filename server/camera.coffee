@@ -3,8 +3,8 @@ _        = require 'underscore'
 
 module.exports = class Camera extends Backbone.Model
   defaults:
-    position: [0.0,0.0,0.0]
-    velocity: [0.0,0.0,0.0]
+    position: [0,0,0]
+    velocity: [0,0,0]
 
   go: (direction) =>
     @update_position silent: true

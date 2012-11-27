@@ -16,10 +16,10 @@ module.exports = class App
     app = express()
 
     app.configure ->
-      app.use express.static Path.join __dirname, '../console'  
+      app.use express.static Path.join __dirname, '../console'
 
     server = Http.createServer app
-    server.listen port 
+    server.listen port
     console.log "Serving at http://0.0.0.0:#{port}/"
 
     @io = SocketIO.listen(server)
