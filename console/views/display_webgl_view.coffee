@@ -18,23 +18,8 @@ class window.DisplayWebGLView
     @canvas = @$canvas.get 0
 
   update_world: (@world) =>
-    @world.timestamp = new Date().getTime()
 
   # Protected
-
-  animate: =>
-    timeNow = new Date().getTime()
-
-    elapsed = timeNow - @world.timestamp
-
-    for planet in @world.planets
-      for i in [0..2]
-        planet.rotation[i] += planet.angular_velocity[i] * elapsed
-    for i in [0..2]
-      @world.camera.position[i] += @world.camera.velocity[i] * elapsed
-
-    @world.timestamp = timeNow
-
   degToRad: (degrees) =>
     degrees * Math.PI / 180
 
@@ -45,17 +30,19 @@ class window.DisplayWebGLView
     mat4.identity @mvMatrix
 
     # Camera Movement
-    mat4.translate @mvMatrix, @world.camera.position
+    mat4.translate @mvMatrix, @world.camera.position()
     @mvPushMatrix()
 
     # Planets
     mat4.translate @mvMatrix, [0.0, 0.0, -5.0]
-    for planet in @world.planets
+    @world.planets.each (planet) =>
       @mvPushMatrix()
-      mat4.translate @mvMatrix, planet.position
-      mat4.rotate @mvMatrix, @degToRad(planet.rotation[0]), [1, 0, 0]
-      mat4.rotate @mvMatrix, @degToRad(planet.rotation[1]), [0, 1, 0]
-      mat4.rotate @mvMatrix, @degToRad(planet.rotation[2]), [0, 0, 1]
+      mat4.translate @mvMatrix, planet.position()
+
+      _.each planet.rotation(), (axis, i) =>
+        a = [0,0,0]
+        a[i] = 1
+        mat4.rotate @mvMatrix, @degToRad(axis), a
 
       @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
       @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @cubeVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
@@ -70,13 +57,14 @@ class window.DisplayWebGLView
       @gl.bindTexture @gl.TEXTURE_2D, @crateTexture
       @gl.uniform1i @shaderProgram.samplerUniform, 0
 
-      @gl.uniform3f @shaderProgram.ambientColorUniform, @world.ambient_color...
+      world_json = @world.toJSON()
+      @gl.uniform3f @shaderProgram.ambientColorUniform, world_json.ambient_color...
       adjustedLD = vec3.create()
-      vec3.normalize @world.light_direction, adjustedLD
+      vec3.normalize world_json.light_direction, adjustedLD
       vec3.scale adjustedLD, -1
       @gl.uniform3fv @shaderProgram.lightingDirectionUniform, adjustedLD
 
-      @gl.uniform3f @shaderProgram.directionalColorUniform, @world.directional_color...
+      @gl.uniform3f @shaderProgram.directionalColorUniform, world_json.directional_color...
 
       @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
       @setMatrixUniforms()
@@ -106,7 +94,7 @@ class window.DisplayWebGLView
     @gl.compileShader shader
 
     unless @gl.getShaderParameter shader, @gl.COMPILE_STATUS
-      alert @gl.getShaderInfoLog(shader) 
+      alert @gl.getShaderInfoLog(shader)
       return null
 
     shader
@@ -290,7 +278,7 @@ class window.DisplayWebGLView
     alert "Could not initialise shaders" unless @gl.getProgramParameter @shaderProgram, @gl.LINK_STATUS
 
     @gl.useProgram @shaderProgram
-    
+
     @shaderProgram.vertexPositionAttribute = @gl.getAttribLocation @shaderProgram, "aVertexPosition"
     @gl.enableVertexAttribArray @shaderProgram.vertexPositionAttribute
 
@@ -340,5 +328,3 @@ class window.DisplayWebGLView
     requestAnimFrame @tick
     return unless @world? and @textureLoaded
     @drawScene()
-    @animate()
-

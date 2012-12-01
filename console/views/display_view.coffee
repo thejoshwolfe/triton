@@ -4,7 +4,7 @@ class window.DisplayView extends Backbone.View
 
   initialize: =>
     @webgl_view = new DisplayWebGLView()
-    window.socket.on 'world', @webgl_view.update_world
+    window.socket.on 'world', @update_world
     window.socket.emit 'request_world'
 
   context: =>
@@ -21,4 +21,8 @@ class window.DisplayView extends Backbone.View
       @webgl_view.run()
     , 500
     @$el
+
+  # Instance Methods
+  update_world: (world_json) =>
+    @webgl_view.update_world new World world_json
 

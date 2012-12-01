@@ -1,10 +1,12 @@
-Backbone = require 'backbone'
-_        = require 'underscore'
+Backbone = window?.Backbone ? require 'backbone'
+_        = window?._        ? require 'underscore'
+Body     = window?.Body     ? require './body'
 
-module.exports = class Camera extends Backbone.Model
-  defaults:
-    position: [0,0,0]
-    velocity: [0,0,0]
+class Camera extends Body
+  defaults: =>
+    _.extend super,
+      position:         [0,0,0]
+      angular_velocity: [0,0,0]
 
   go: (direction) =>
     @update_position silent: true
@@ -20,10 +22,6 @@ module.exports = class Camera extends Backbone.Model
       else console?.log 'DisplayWebGLView.go: Invalid direction name'
     @set 'velocity', velocity
 
-  toJSON: (options={}) =>
-    @update_position silent: true, time: options.time
-    super
-
   update_position: (options={}) =>
     current_time = options.time ? new Date().getTime()
 
@@ -38,3 +36,5 @@ module.exports = class Camera extends Backbone.Model
 
     @last_position_update = current_time
 
+window?.Camera  = Camera
+module?.exports = Camera

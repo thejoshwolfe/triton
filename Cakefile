@@ -18,7 +18,8 @@ exec = (cmd, args=[], cb=->) ->
 eco_compile = (input_path) ->
   fs.readFile input_path, (err, data) ->
     output_path = input_path.replace(/\.eco$/, '.js')
-    jst_path    = input_path.replace(/\.eco$/, '').replace(/\\/g, '/')
+    backslash   = new RegExp('\\\\', 'g') # Avoid syntax highlighting problem in Sublime 2
+    jst_path    = input_path.replace(/\.eco$/, '').replace(backslash, '/')
     source = "window.JST['#{jst_path}'] = "
     source += eco.precompile data.toString()
     fs.writeFile output_path, source, ->
@@ -28,6 +29,8 @@ build = (watch)->
   mkdirp 'public', ->
     args = if watch then ['-w'] else []
     exec 'coffee', args.concat(['-cbo', 'lib/', 'server/'])
+    exec 'coffee', args.concat(['-cbo', 'lib/', 'shared/'])
+    exec 'coffee', args.concat(['-cbo', 'console/shared/', 'shared/'])
     exec 'coffee', args.concat(['-cb', 'console/', 'console/views/'])
 
     if watch
