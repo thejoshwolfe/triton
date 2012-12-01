@@ -7,9 +7,7 @@ Check out [the demo](http://triton.royvandewater.com).
 Dev Setup
 ---------
 
-1. Install dependencies: `npm install`
-2. Run development server: `PORT=3000 cake dev` (port can be any unused
-   port, defaults to 8000)
+`npm run dev`
 
 Deploy
 ------
