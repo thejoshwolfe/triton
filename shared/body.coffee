@@ -14,6 +14,23 @@ class Body extends Backbone.Model
     ]
 
   # Public Methods
+  go: (direction) =>
+    velocity = _.clone @get 'velocity'
+    acceleration = 0.001
+    switch direction
+      when 'up'      then velocity[1] -= acceleration
+      when 'down'    then velocity[1] += acceleration
+      when 'left'    then velocity[0] += acceleration
+      when 'right'   then velocity[0] -= acceleration
+      when 'forward' then velocity[2] += acceleration
+      when 'back'    then velocity[2] -= acceleration
+      else console?.log 'DisplayWebGLView.go: Invalid direction name'
+    @set
+      timestamp: new Date().getTime()
+      position: @position()
+      rotation: @rotation()
+      velocity: velocity
+
   position: =>
     @extrapolate 'position', 'velocity'
 
@@ -29,20 +46,6 @@ class Body extends Backbone.Model
     _.times 3, (i) =>
       position[i] += elapsed * velocity[i]
     position
-
-  update_cube: (options={}) =>
-    current_time = options.time ? new Date().getTime()
-
-    if @last_cube_update?
-      elapsed = current_time - @last_cube_update
-      planets = _.clone @get 'planets'
-      for planet in planets
-        for i in [0..2]
-          planet.rotation[i] += planet.angular_velocity[i] * elapsed
-      @set {planets}, silent: options.silent
-
-    @last_cube_update = current_time
-
 
 window?.Body = Body
 module?.exports = Body
