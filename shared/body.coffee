@@ -15,17 +15,21 @@ class Body extends Backbone.Model
 
   # Public Methods
   position: =>
-    position = _.clone @get 'position'
-    velocity = _.clone @get 'velocity'
+    @extrapolate 'position', 'velocity'
+
+  rotation: =>
+    @extrapolate 'rotation', 'angular_velocity'
+
+  # private methods
+  extrapolate: (position_attribute_name, velocity_attribute_name) =>
+    position = _.clone @get position_attribute_name
+    velocity = _.clone @get velocity_attribute_name
     elapsed  = new Date().getTime() - @get('timestamp')
+
     _.times 3, (i) =>
       position[i] += elapsed * velocity[i]
     position
 
-
-  rotation: => @get 'rotation'
-
-  # private methods
   update_cube: (options={}) =>
     current_time = options.time ? new Date().getTime()
 
