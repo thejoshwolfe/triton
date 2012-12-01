@@ -14,7 +14,14 @@ class Body extends Backbone.Model
     ]
 
   # Public Methods
-  position: => @get 'position'
+  position: =>
+    position = _.clone @get 'position'
+    velocity = _.clone @get 'velocity'
+    elapsed  = new Date().getTime() - @get('timestamp')
+    _.times 3, (i) =>
+      position[i] += elapsed * velocity[i]
+    position
+
 
   rotation: => @get 'rotation'
 
