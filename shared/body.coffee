@@ -1,7 +1,8 @@
 Backbone = window?.Backbone ? require 'backbone'
 _        = window?._        ? require 'underscore'
 
-class Body extends Backbone.Model
+root = exports ? this
+class root.Body extends Backbone.Model
   defaults: =>
     timestamp: new Date().getTime()
     rotation:         [0,0,0]
@@ -46,6 +47,3 @@ class Body extends Backbone.Model
     _.times 3, (i) =>
       position[i] += elapsed * velocity[i]
     position
-
-window?.Body = Body
-module?.exports = Body

@@ -1,9 +1,10 @@
 Backbone = window?.Backbone ? require 'backbone'
 _        = window?._        ? require 'underscore'
-Bodies   = window?.Bodies   ? require './bodies'
-Body     = window?.Body     ? require './body'
+{Bodies} = window ? require './bodies'
+{Body}   = window ? require './body'
 
-class World extends Backbone.Model
+root = exports ? this
+class root.World extends Backbone.Model
   defaults:
     camera:
       position: [0,0,0]
@@ -34,6 +35,3 @@ class World extends Backbone.Model
   # Instance Methods
   helm_command: (command) =>
     @camera.go command
-
-window?.World = World
-module?.exports = World

@@ -1,8 +1,8 @@
 Http     = require 'http'
 Path     = require 'path'
 SocketIO = require 'socket.io'
-World    = require './world'
 express  = require 'express'
+{World}    = require './world'
 
 module.exports = class App
   constructor: (args={}) ->
