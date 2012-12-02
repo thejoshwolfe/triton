@@ -90,9 +90,9 @@ class window.MinimapView extends Backbone.View
 
   update_engage_button_state: =>
     if @world?.get('cursor_position')?
-      @$('button.engage').removeClass('disabled').addClass('btn-danger')
+      @$('button.engage').removeClass('disabled btn-inverse').addClass('btn-danger')
     else
-      @$('button.engage').removeClass('btn-danger').addClass('disabled')
+      @$('button.engage').removeClass('btn-danger').addClass('disabled btn-inverse')
 
   # -20 <= x <= 20
   mapToWorldX: (map_x)   => (map_x - @canvas.width  / 2) / @scale
