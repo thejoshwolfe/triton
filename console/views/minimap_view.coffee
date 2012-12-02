@@ -16,6 +16,12 @@ class window.MinimapView extends Backbone.View
     @$el.on 'contextmenu', 'canvas', => false
     @$el
 
+  events:
+    'click .engage' : 'click_engage'
+
+  click_engage: =>
+    window.socket.emit 'helm', command: 'engage'
+
   run: =>
     @canvas    = document.getElementById('minimap-canvas')
     $(@canvas).attr 'width', $(window).width() - 40
