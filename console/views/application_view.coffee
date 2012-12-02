@@ -28,4 +28,5 @@ class window.ApplicationView extends Backbone.View
     $('.nav-collapse li.minimap').addClass('active')
     @child_view = new MinimapView()
     @render()
+    @child_view.run()
     callback()
