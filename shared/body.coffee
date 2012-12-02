@@ -15,25 +15,16 @@ class root.Body extends Backbone.Model
     ]
 
   # Public Methods
-  go: (direction) =>
+  accelerate: (acceleration) =>
     velocity = _.clone @get 'velocity'
-    acceleration = 0.001
-    switch direction
-      # x
-      when 'left'    then velocity[0] -= acceleration
-      when 'right'   then velocity[0] += acceleration
-      # y
-      when 'back'    then velocity[1] -= acceleration
-      when 'forward' then velocity[1] += acceleration
-      # z
-      when 'down'    then velocity[2] -= acceleration
-      when 'up'      then velocity[2] += acceleration
-      else new Error("invalid direction")
-    @set
-      timestamp: new Date().getTime()
-      position: @position()
-      rotation: @rotation()
+    for i in [0..2]
+      velocity[i] += acceleration[i]
+    @set_physics
       velocity: velocity
+
+  go_toward_at_speed: (point, speed) =>
+    @set_physics
+      position: point
 
   position: =>
     @extrapolate 'position', 'velocity'
@@ -50,3 +41,11 @@ class root.Body extends Backbone.Model
     _.times 3, (i) =>
       position[i] += elapsed * velocity[i]
     position
+
+  set_physics: (props) =>
+    @set
+      timestamp:        new Date().getTime()
+      position:         props.position         ? @position()
+      velocity:         props.velocity         ? @get 'velocity'
+      rotation:         props.rotation         ? @rotation()
+      angular_velocity: props.angular_velocity ? @get 'angular_velocity'
