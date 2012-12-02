@@ -1,6 +1,7 @@
 class window.MinimapView extends Backbone.View
   template: JST['console/templates/minimap']
   className: 'minimap-view'
+  scale: 20
 
   initialize: =>
     window.socket.on 'world', (world_json) =>
@@ -15,6 +16,9 @@ class window.MinimapView extends Backbone.View
     @$el
 
   run: =>
+    @canvas    = document.getElementById('minimap-canvas')
+    @context2d = @canvas.getContext('2d')
+    @canvas.addEventListener 'mousedown', @mouse_click, false
     @tick()
 
   tick: =>
@@ -24,9 +28,6 @@ class window.MinimapView extends Backbone.View
     @drawScene() if @world?
 
   drawScene: =>
-    @canvas ?= document.getElementById('minimap-canvas')
-    @context2d ?= @canvas.getContext('2d')
-
     # clear
     @context2d.fillStyle = '#000'
     @context2d.fillRect(0, 0, @canvas.width, @canvas.height)
@@ -39,9 +40,42 @@ class window.MinimapView extends Backbone.View
 
     # camera
     @context2d.fillStyle = '#6A89FD'
-    [x, y, z] = @world.camera.position()
-    @context2d.fillRect(@worldToMapX(x), @worldToMapY(y), 6, 7)
+    [ship_x, ship_y, dont_care] = @world.camera.position()
+    ship_x = @worldToMapX ship_x
+    ship_y = @worldToMapY ship_y
+    @context2d.fillRect(ship_x-3, ship_y-3, 6, 6)
+
+    return unless (cursor_position = @world.get('cursor_position'))?
+
+    # cursor
+    @context2d.strokeStyle = '#00FF00'
+    [cursor_x, cursor_y] = cursor_position
+    cursor_x = @worldToMapX cursor_x
+    cursor_y = @worldToMapY cursor_y
+    @context2d.strokeRect cursor_x-5, cursor_y-5, 10, 10
+
+    # course
+    @context2d.strokeStyle = '#666'
+    @context2d.beginPath()
+    @context2d.moveTo ship_x, ship_y
+    @context2d.lineTo cursor_x, cursor_y
+    @context2d.closePath()
+    @context2d.stroke()
+
+
+  mouse_click: (event) =>
+    return @cursor_position = null if event.which == 3
+
+    x = event.offsetX ? (event.pageX - event.target.offsetLeft)
+    x = @mapToWorldX x
+    y = event.offsetY ? (event.pageY - event.target.offsetTop)
+    y = @mapToWorldY y
+
+    window.socket.emit 'new_course', [x, y]
+    @world.set_new_course [x, y]
 
   # -20 <= x <= 20
-  worldToMapX: (world_x) => (world_x + 20) * @canvas.width / 40
-  worldToMapY: (world_y) => (world_y + 20) * @canvas.height / 40
+  mapToWorldX: (map_x)   => (map_x - @canvas.width  / 2) / @scale
+  mapToWorldY: (map_y)   => (map_y - @canvas.height / 2) / @scale
+  worldToMapX: (world_x) => world_x * @scale + @canvas.width  / 2
+  worldToMapY: (world_y) => world_y * @scale + @canvas.height / 2

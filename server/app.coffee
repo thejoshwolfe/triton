@@ -27,6 +27,8 @@ module.exports = class App
     @io.sockets.on 'connection', (socket) =>
       socket.on 'helm', (data) =>
         @world.helm_command data.command
+      socket.on 'new_course', (cursor_position) =>
+        @world.set_new_course cursor_position
       socket.on 'request_world', =>
         socket.emit 'world', @world.toJSON()
       socket.on 'reset', =>

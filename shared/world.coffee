@@ -35,3 +35,6 @@ class root.World extends Backbone.Model
   # Instance Methods
   helm_command: (command) =>
     @camera.go command
+
+  set_new_course: (cursor_position) =>
+    @set 'cursor_position', cursor_position
