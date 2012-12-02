@@ -65,7 +65,6 @@ class window.MinimapView extends Backbone.View
 
 
   mouse_click: (event) =>
-    event.preventDefault()
     return window.socket.emit 'new_course', null if event.which == 3
 
     x = event.offsetX ? (event.pageX - event.target.offsetLeft)
