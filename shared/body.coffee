@@ -11,7 +11,7 @@ class root.Body extends Backbone.Model
     position: [
       (Math.random() - 0.5) * 40
       (Math.random() - 0.5) * 40
-      (Math.random() - 0.5) * 40
+      (Math.random() - 0.5) * 10
     ]
 
   # Public Methods

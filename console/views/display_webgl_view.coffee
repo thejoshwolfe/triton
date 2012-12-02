@@ -33,11 +33,11 @@ class window.DisplayWebGLView
     mat4.rotate @mvMatrix, @degToRad(-90), [1,0,0]
     mat4.scale @mvMatrix, [-1,-1,-1]
     mat4.translate @mvMatrix, @world.camera.position()
+    mat4.scale @mvMatrix, [-1,-1,-1]
 
     @mvPushMatrix()
 
     # Planets
-    mat4.translate @mvMatrix, [0.0, 0.0, -5.0]
     @world.planets.each (planet) =>
       @mvPushMatrix()
       mat4.translate @mvMatrix, planet.position()

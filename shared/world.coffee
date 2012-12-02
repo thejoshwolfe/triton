@@ -21,7 +21,7 @@ class root.World extends Backbone.Model
 
     @planets = new Bodies options.planets
     unless @planets.size()
-      _.times 40, => @planets.add()
+      _.times 10, => @planets.add()
 
   make_planet: (position) =>
     return {}=
