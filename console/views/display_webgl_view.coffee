@@ -30,7 +30,10 @@ class window.DisplayWebGLView
     mat4.identity @mvMatrix
 
     # Camera Movement
+    mat4.rotate @mvMatrix, @degToRad(-90), [1,0,0]
+    mat4.scale @mvMatrix, [-1,-1,-1]
     mat4.translate @mvMatrix, @world.camera.position()
+
     @mvPushMatrix()
 
     # Planets
