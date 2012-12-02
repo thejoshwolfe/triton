@@ -13,6 +13,7 @@ class window.MinimapView extends Backbone.View
 
   render: =>
     @$el.html @template @context()
+    @$el.on 'contextmenu', 'canvas', => false
     @$el
 
   run: =>
@@ -64,7 +65,8 @@ class window.MinimapView extends Backbone.View
 
 
   mouse_click: (event) =>
-    return @cursor_position = null if event.which == 3
+    event.preventDefault()
+    return window.socket.emit 'new_course', null if event.which == 3
 
     x = event.offsetX ? (event.pageX - event.target.offsetLeft)
     x = @mapToWorldX x
