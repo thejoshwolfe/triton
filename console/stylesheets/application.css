@@ -33,8 +33,3 @@ body, div, span, img, a, button {
   width: 100%;
   font-size: 50px;
 }
-
-.minimap-view button.engage.disabled {
-  color: white;
-}
-
