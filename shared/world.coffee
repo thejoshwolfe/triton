@@ -48,8 +48,10 @@ class root.World extends Backbone.Model
       # course
       when 'engage'  then @engage()
       else new Error("invalid helm command")
+
   engage: =>
     return unless (cursor_position = @get 'cursor_position')?
+    @set {cursor_position: null}, silent: true
     @camera.go_toward_at_speed cursor_position, 0.01
 
   set_new_course: (cursor_position) =>
