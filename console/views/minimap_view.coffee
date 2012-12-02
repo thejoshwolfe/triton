@@ -21,7 +21,7 @@ class window.MinimapView extends Backbone.View
     return if @destroyed
 
     requestAnimFrame @tick
-    @drawScene()
+    @drawScene() if @world?
 
   drawScene: =>
     @canvas ?= document.getElementById('minimap-canvas')
@@ -35,7 +35,13 @@ class window.MinimapView extends Backbone.View
     @context2d.fillStyle = '#fff'
     @world.planets.each (planet) =>
       [x, y, z] = planet.position()
-      # -20 <= x <= 20
-      x = (x + 20) * @canvas.width / 40
-      z = (z + 20) * @canvas.height / 40
-      @context2d.fillRect(x, z, 1, 1)
+      @context2d.fillRect(@worldToMapX(x), @worldToMapY(y), 1, 1)
+
+    # camera
+    @context2d.fillStyle = '#6A89FD'
+    [x, y, z] = @world.camera.position()
+    @context2d.fillRect(@worldToMapX(x), @worldToMapY(y), 6, 7)
+
+  # -20 <= x <= 20
+  worldToMapX: (world_x) => (world_x + 20) * @canvas.width / 40
+  worldToMapY: (world_y) => (world_y + 20) * @canvas.height / 40

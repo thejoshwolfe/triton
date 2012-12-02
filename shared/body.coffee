@@ -6,12 +6,12 @@ class root.Body extends Backbone.Model
   defaults: =>
     timestamp: new Date().getTime()
     rotation:         [0,0,0]
-    angular_velocity: [0,0.01,0]
+    angular_velocity: [0,0,0.01]
     velocity:         [0,0,0]
     position: [
       (Math.random() - 0.5) * 40
       (Math.random() - 0.5) * 40
-      (Math.random() - 1)   * 40
+      (Math.random() - 0.5) * 40
     ]
 
   # Public Methods
@@ -19,13 +19,16 @@ class root.Body extends Backbone.Model
     velocity = _.clone @get 'velocity'
     acceleration = 0.001
     switch direction
-      when 'up'      then velocity[1] -= acceleration
-      when 'down'    then velocity[1] += acceleration
-      when 'left'    then velocity[0] += acceleration
-      when 'right'   then velocity[0] -= acceleration
-      when 'forward' then velocity[2] += acceleration
-      when 'back'    then velocity[2] -= acceleration
-      else console?.log 'DisplayWebGLView.go: Invalid direction name'
+      # x
+      when 'left'    then velocity[0] -= acceleration
+      when 'right'   then velocity[0] += acceleration
+      # y
+      when 'back'    then velocity[1] -= acceleration
+      when 'forward' then velocity[1] += acceleration
+      # z
+      when 'down'    then velocity[2] -= acceleration
+      when 'up'      then velocity[2] += acceleration
+      else new Error("invalid direction")
     @set
       timestamp: new Date().getTime()
       position: @position()
