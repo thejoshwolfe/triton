@@ -25,9 +25,10 @@ class window.MinimapView extends Backbone.View
   run: =>
     @canvas    = document.getElementById('minimap-canvas')
     $(@canvas).attr 'width', $(window).width() - 40
-    $(@canvas).attr 'height', $(window).height() - 120
+    $(@canvas).attr 'height', $(window).height() - 220
     @context2d = @canvas.getContext('2d')
     @canvas.addEventListener 'mousedown', @mouse_click, false
+    @canvas.addEventListener 'mousewheel', @mouse_wheel, false
     @tick()
 
   tick: =>
@@ -81,6 +82,10 @@ class window.MinimapView extends Backbone.View
 
     window.socket.emit 'new_course', [x, y]
     @world.set_new_course [x, y]
+
+  mouse_wheel: (event) =>
+    event.preventDefault()
+    @scale *= 1 + (event.wheelDelta / 1000)
 
   # -20 <= x <= 20
   mapToWorldX: (map_x)   => (map_x - @canvas.width  / 2) / @scale

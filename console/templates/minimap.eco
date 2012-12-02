@@ -1,3 +1,7 @@
-<button class="btn btn-large btn-danger engage">EGAGE</button>
-<br />
+<div class="row-fluid controls">
+  <div class="span12">
+    <button class="btn btn-large btn-danger engage">ENGAGE</button>
+  </div>
+</div>
+
 <canvas id="minimap-canvas" style="border: none" width="500" height="400"></canvas>

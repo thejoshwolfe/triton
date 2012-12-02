@@ -24,3 +24,12 @@ body, div, span, img, a, button {
 .helm-controls button.up {
   margin-left: 3px;
 }
+
+.minimap-view .controls {
+  padding-bottom: 20px;
+}
+
+.minimap-view button.engage {
+  width: 100%;
+  font-size: 50px;
+}
