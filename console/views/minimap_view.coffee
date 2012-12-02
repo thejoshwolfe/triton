@@ -6,14 +6,15 @@ class window.MinimapView extends Backbone.View
   initialize: =>
     window.socket.on 'world', (world_json) =>
       @world = new World(world_json)
+      @update_engage_button_state()
     window.socket.emit 'request_world'
 
-  context: =>
-    {}
+  context: => {}
 
   render: =>
     @$el.html @template @context()
     @$el.on 'contextmenu', 'canvas', => false
+    @update_engage_button_state()
     @$el
 
   events:
@@ -86,6 +87,12 @@ class window.MinimapView extends Backbone.View
   mouse_wheel: (event) =>
     event.preventDefault()
     @scale *= 1 + (event.wheelDelta / 1000)
+
+  update_engage_button_state: =>
+    if @world?.get('cursor_position')?
+      @$('button.engage').removeClass('disabled').addClass('btn-danger')
+    else
+      @$('button.engage').removeClass('btn-danger').addClass('disabled')
 
   # -20 <= x <= 20
   mapToWorldX: (map_x)   => (map_x - @canvas.width  / 2) / @scale

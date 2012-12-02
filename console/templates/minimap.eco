@@ -1,6 +1,8 @@
 <div class="row-fluid controls">
   <div class="span12">
-    <button class="btn btn-large btn-danger engage">ENGAGE</button>
+    <button class="btn btn-large engage disabled">
+      ENGAGE
+    </button>
   </div>
 </div>
 
