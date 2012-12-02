@@ -15,6 +15,7 @@ class window.ApplicationView extends Backbone.View
     $('.nav-collapse li.display').addClass('active')
     @child_view = new DisplayView()
     @render()
+    @child_view.run()
     callback()
 
   navigate_to_helm: (callback=->) =>
