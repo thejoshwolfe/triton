@@ -30,3 +30,10 @@ class window.ApplicationView extends Backbone.View
     @render()
     @child_view.run()
     callback()
+
+  navigate_to_science: (callback=->) =>
+    $('.nav-collapse li.science').addClass('active')
+    @child_view = new ScienceView()
+    @render()
+    @child_view.run()
+    callback()
