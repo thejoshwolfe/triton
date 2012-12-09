@@ -81,8 +81,9 @@ class window.MinimapView extends Backbone.View
     y = event.offsetY ? (event.pageY - event.target.offsetTop)
     y = @mapToWorldY y
 
-    window.socket.emit 'new_course', [x, y]
-    @world.set_new_course [x, y]
+    cursor_position = [x, y, 0]
+    window.socket.emit 'new_course', cursor_position
+    @world.set_new_course cursor_position
 
   mouse_wheel: (event) =>
     event.preventDefault()
