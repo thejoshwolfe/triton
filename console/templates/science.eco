@@ -1,3 +1,10 @@
-<div>
-  hello world
+<div class="row-fluid controls">
+  <div class="span12">
+    <button class="btn btn-large accept_mission">
+      Accept Mission
+    </button>
+  </div>
+</div>
+
+<div id="mission_blurb">
 </div>

@@ -31,10 +31,18 @@ module.exports = class App
         @world.set_new_course cursor_position
       socket.on 'request_world', =>
         socket.emit 'world', @world.toJSON()
+      socket.on 'request_mission_blurb', =>
+        socket.emit 'mission_blurb', @mission_blurb
+      socket.on 'accept_mission', =>
+        return if @mission_blurb?
+        @io.sockets.emit 'mission_blurb', @mission_blurb = '''
+          cure diseases.
+        '''
       socket.on 'reset', =>
         @world = new World()
         @world.on 'all', @send_world
         @send_world()
+        @io.sockets.emit 'mission_blurb', @mission_blurb = null
 
   # Protected
   send_world: =>
