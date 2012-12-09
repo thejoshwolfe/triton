@@ -4,7 +4,7 @@ _        = window?._        ? require 'underscore'
 root = exports ? this
 class root.Body extends Backbone.Model
   defaults: =>
-    timestamp: new Date().getTime()
+    timestamp: new Date().getAdjustedTime()
     rotation:         [0,0,0]
     angular_velocity: [0,0,0.01]
     velocity:         [0,0,0]
@@ -36,7 +36,7 @@ class root.Body extends Backbone.Model
   extrapolate: (position_attribute_name, velocity_attribute_name) =>
     position = _.clone @get position_attribute_name
     velocity = _.clone @get velocity_attribute_name
-    elapsed  = new Date().getTime() - @get('timestamp')
+    elapsed  = new Date().getAdjustedTime() - @get('timestamp')
 
     _.times 3, (i) =>
       position[i] += elapsed * velocity[i]

@@ -1,4 +1,10 @@
 class window.ApplicationView extends Backbone.View
+  initialize: =>
+    window.time_offset = 0
+    current_time = new Date().getTime()
+    window.socket.on 'time_update', @time_update
+    @time_update client_time: current_time, server_time: current_time
+
   render: =>
     $("#application-view").html @child_view?.render()
     this
@@ -37,3 +43,9 @@ class window.ApplicationView extends Backbone.View
     @render()
     @child_view.run()
     callback()
+
+  time_update: (data) =>
+    window.time_offset = (window.time_offset + data.server_time - data.client_time) / 2
+    _.delay =>
+      window.socket.emit 'time_check', client_time: new Date().getTime()
+    , 500

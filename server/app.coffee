@@ -1,3 +1,4 @@
+require './date'
 Http     = require 'http'
 Path     = require 'path'
 SocketIO = require 'socket.io'
@@ -25,6 +26,11 @@ module.exports = class App
     @io = SocketIO.listen(server)
     @io.set 'log level', 2 # 0: error, 1: warn, 2: info, 3: debug
     @io.sockets.on 'connection', (socket) =>
+      socket.on 'accept_mission', =>
+        return if @mission_blurb?
+        @io.sockets.emit 'mission_blurb', @mission_blurb = '''
+          cure diseases.
+        '''
       socket.on 'helm', (data) =>
         @world.helm_command data.command
       socket.on 'new_course', (cursor_position) =>
@@ -33,16 +39,14 @@ module.exports = class App
         socket.emit 'world', @world.toJSON()
       socket.on 'request_mission_blurb', =>
         socket.emit 'mission_blurb', @mission_blurb
-      socket.on 'accept_mission', =>
-        return if @mission_blurb?
-        @io.sockets.emit 'mission_blurb', @mission_blurb = '''
-          cure diseases.
-        '''
       socket.on 'reset', =>
         @world = new World()
         @world.on 'all', @send_world
         @send_world()
         @io.sockets.emit 'mission_blurb', @mission_blurb = null
+      socket.on 'time_check', (data) =>
+        data.server_time = new Date().getTime()
+        socket.emit 'time_update', data
 
   # Protected
   send_world: =>
