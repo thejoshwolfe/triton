@@ -31,7 +31,6 @@ class root.Body extends Backbone.Model
       position: point
       velocity: new Vec3d
     @set_physics trajectory
-    console.log @get 'trajectory'
 
   position: =>
     @extrapolate 'position', 'velocity'
