@@ -1,10 +1,11 @@
 Backbone = window?.Backbone ? require 'backbone'
 _        = window?._        ? require 'underscore'
+{Vec3d}  = window ? require './vec3d'
 
 root = exports ? this
 class root.Body extends Backbone.Model
   defaults: =>
-    timestamp: new Date().getAdjustedTime()
+    timestamp:        @now()
     rotation:         [0,0,0]
     angular_velocity: [0,0,0.01]
     velocity:         [0,0,0]
@@ -15,16 +16,15 @@ class root.Body extends Backbone.Model
     ]
 
   # Public Methods
-  accelerate: (acceleration) =>
-    velocity = _.clone @get 'velocity'
-    for i in [0..2]
-      velocity[i] += acceleration[i]
+  accelerate: (x, y, z) =>
     @set_physics
-      velocity: velocity
+      velocity: @get_vector('velocity').add new Vec3d(x, y, z)
 
   go_toward_at_speed: (point, speed) =>
+    delta = point.minus @position()
+    speed = delta.normalized().scale speed
     @set_physics
-      position: point
+      velocity: speed
 
   position: =>
     @extrapolate 'position', 'velocity'
@@ -34,18 +34,19 @@ class root.Body extends Backbone.Model
 
   # private methods
   extrapolate: (position_attribute_name, velocity_attribute_name) =>
-    position = _.clone @get position_attribute_name
-    velocity = _.clone @get velocity_attribute_name
-    elapsed  = new Date().getAdjustedTime() - @get('timestamp')
+    position = @get_vector position_attribute_name
+    velocity = @get_vector velocity_attribute_name
+    elapsed  = @now() - @get 'timestamp'
+    position.add velocity.scaled elapsed
 
-    _.times 3, (i) =>
-      position[i] += elapsed * velocity[i]
-    position
+  get_vector: (name) => new Vec3d @get name
+
+  now: => new Date().getAdjustedTime()
 
   set_physics: (props) =>
     @set
-      timestamp:        new Date().getTime()
-      position:         props.position         ? @position()
-      velocity:         props.velocity         ? @get 'velocity'
-      rotation:         props.rotation         ? @rotation()
-      angular_velocity: props.angular_velocity ? @get 'angular_velocity'
+      timestamp:        @now()
+      position:         (props.position         ? @position()                   ).toArray()
+      velocity:         (props.velocity         ? @get_vector 'velocity'        ).toArray()
+      rotation:         (props.rotation         ? @rotation()                   ).toArray()
+      angular_velocity: (props.angular_velocity ? @get_vector 'angular_velocity').toArray()

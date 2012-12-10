@@ -32,7 +32,7 @@ class window.DisplayWebGLView
     # Camera Movement
     mat4.rotate @mvMatrix, @degToRad(-90), [1,0,0]
     mat4.scale @mvMatrix, [-1,-1,-1]
-    mat4.translate @mvMatrix, @world.camera.position()
+    mat4.translate @mvMatrix, @world.camera.position().toArray()
     mat4.scale @mvMatrix, [-1,-1,-1]
 
     @mvPushMatrix()
@@ -40,9 +40,9 @@ class window.DisplayWebGLView
     # Planets
     @world.planets.each (planet) =>
       @mvPushMatrix()
-      mat4.translate @mvMatrix, planet.position()
+      mat4.translate @mvMatrix, planet.position().toArray()
 
-      _.each planet.rotation(), (axis, i) =>
+      _.each planet.rotation().toArray(), (axis, i) =>
         a = [0,0,0]
         a[i] = 1
         mat4.rotate @mvMatrix, @degToRad(axis), a

@@ -4,6 +4,7 @@ Path     = require 'path'
 SocketIO = require 'socket.io'
 express  = require 'express'
 {World}  = require './world'
+{Vec3d}  = require './vec3d'
 
 module.exports = class App
   constructor: (args={}) ->
@@ -42,7 +43,7 @@ module.exports = class App
       socket.on 'helm', (data) =>
         @world.helm_command data.command
       socket.on 'new_course', (cursor_position) =>
-        @world.set_new_course cursor_position
+        @world.set_new_course new Vec3d cursor_position
       socket.on 'request_world', =>
         socket.emit 'world', @world.toJSON()
       socket.on 'request_mission_blurb', =>
