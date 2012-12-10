@@ -7,9 +7,6 @@ _        = window?._        ? require 'underscore'
 root = exports ? this
 class root.World extends Backbone.Model
   defaults:
-    camera:
-      position: [0,0,0]
-      angular_velocity: [0,0,0]
     light_direction:   [-0.25, -0.25, -1.0]
     ambient_color:     [ 0.2,   0.2,   0.2]
     directional_color: [ 0.8,   0.8,   0.8]
@@ -22,7 +19,17 @@ class root.World extends Backbone.Model
 
     @planets = new Bodies options.planets
     unless @planets.size()
-      _.times 10, => @planets.add()
+      # create a world
+      _.times 10, =>
+        planet = new Body
+        planet.set_physics
+          angular_velocity: new Vec3d(0,0,0.01)
+          position: new Vec3d(
+            (Math.random() - 0.5) * 40
+            (Math.random() - 0.5) * 40
+            (Math.random() - 0.5) * 10
+          )
+        @planets.add planet
 
   toJSON: =>
     _.extend super,

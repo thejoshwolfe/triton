@@ -7,13 +7,9 @@ class root.Body extends Backbone.Model
   defaults: =>
     timestamp:        @now()
     rotation:         [0,0,0]
-    angular_velocity: [0,0,0.01]
+    angular_velocity: [0,0,0]
     velocity:         [0,0,0]
-    position: [
-      (Math.random() - 0.5) * 40
-      (Math.random() - 0.5) * 40
-      (Math.random() - 0.5) * 10
-    ]
+    position:         [0,0,0]
 
   # Public Methods
   accelerate: (x, y, z) =>
