@@ -1,10 +1,20 @@
-<div class="row-fluid controls">
-  <div class="span12">
-    <button class="btn btn-large accept_mission">
-      Accept Mission
-    </button>
-  </div>
+<h2>Communications</h2>
+<div class="row-fluid">
+  <button class="btn btn-large accept_mission">
+    Accept Mission
+  </button>
+</div>
+<div id="mission_blurb">
 </div>
 
-<div id="mission_blurb">
+<h2>Sensors</h2>
+<div class="row-fluid">
+  <button class="btn btn-large long_range_scan">
+    Long Range Scan
+  </button>
+  <button class="btn btn-large scan_planet">
+    Scan Planet
+  </button>
+</div>
+<div id="scan_results">
 </div>
