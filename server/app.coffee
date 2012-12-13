@@ -37,9 +37,11 @@ module.exports = class App
           go to a planet.
         '''
       socket.on 'scan_planet', =>
-        @io.sockets.emit 'scan_results', @scan_results = '''
-          no planets within range.
-        '''
+        # are we near (in) a planet?
+        position = @world.camera.position()
+        planet = @world.planets.find (planet) =>
+          planet.position().distance(position) < 1
+        @io.sockets.emit 'scan_results', @scan_results = if planet? then 'life signs' else 'no planets within range.'
       socket.on 'helm', (data) =>
         @world.helm_command data.command
       socket.on 'new_course', (cursor_position) =>
