@@ -26,7 +26,14 @@ class window.MinimapView extends Backbone.View
     $(@canvas).attr 'width', $(window).width() - 40
     $(@canvas).attr 'height', $(window).height() - 220
     @context2d = @canvas.getContext('2d')
-    @canvas.addEventListener 'mousedown', @mouse_click, false
+
+    @hammer = new Hammer @canvas
+    @hammer.ontap          = @mouse_click
+    @hammer.ondoubletap    = @mouse_double_click
+    @hammer.ontransform    = @pinch
+    @hammer.ontransformend = @pinch_end
+
+    @canvas.addEventListener 'mousedown', ((e) => e.preventDefault()), false # Prevents screen flickering on mobile
     @canvas.addEventListener 'mousewheel', @mouse_wheel, false
     @tick()
 
@@ -68,18 +75,30 @@ class window.MinimapView extends Backbone.View
     @context2d.stroke()
 
   mouse_click: (event) =>
-    return window.socket.emit 'new_course', null if event.which == 3
+    return unless event.position?
+    return @mouse_double_click() if event.originalEvent.which == 3
+    {x, y} = _.first event.position
 
-    x = event.offsetX ? (event.pageX - event.target.offsetLeft)
-    y = event.offsetY ? (event.pageY - event.target.offsetTop)
+    x -= @canvas.offsetLeft
+    y -= @canvas.offsetTop
 
     cursor_position = @mapToWorld new Vec3d(x,y,0)
     window.socket.emit 'new_course', cursor_position.toArray()
     @world.set_new_course cursor_position
 
+  mouse_double_click: =>
+    window.socket.emit 'new_course', null
+
   mouse_wheel: (event) =>
     event.preventDefault()
     @scale *= 1 + (event.wheelDelta / 1000)
+
+  pinch: (event) =>
+    @previous_scale_factor ?= @scale
+    @scale = @previous_scale_factor * event.scale
+
+  pinch_end: (event) =>
+    @previous_scale_factor = @scale
 
   update_engage_button_state: =>
     if @world?.get('cursor_position')?
