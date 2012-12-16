@@ -5,51 +5,53 @@ _        = window?._        ? require 'underscore'
 root = exports ? this
 class root.Body extends Backbone.Model
   defaults: =>
-    trajectory: [
-      timestamp:        @now()
-      rotation:         [0,0,0]
-      angular_velocity: [0,0,0]
-      velocity:         [0,0,0]
-      position:         [0,0,0]
-    ]
+    trajectory: [{timestamp: @now()}]
 
   # Public Methods
   accelerate: (x, y, z) =>
     @set_physics
       velocity: @velocity().add new Vec3d(x, y, z)
 
-  go_toward_at_speed: (point, speed) =>
+  go_to_point: (point, acceleration_magnitude) =>
     delta = point.minus @position()
-    velocity = delta.normalized().scale speed
-    travel_time = delta.length() / speed
+    acceleration = delta.normalized().scale acceleration_magnitude
+    distance = delta.length()
+    travel_time = Math.sqrt(2 * distance / acceleration_magnitude)
     arrival_time = @now() + travel_time
-    trajectory = []
-    trajectory.push
-      velocity: velocity
-    trajectory.push
-      timestamp: arrival_time
-      position: point
-      velocity: new Vec3d
+    velocity = new Vec3d
+    trajectory = [
+      {acceleration, velocity}
+      {
+        timestamp: arrival_time
+        position: point
+        velocity
+      }
+    ]
     @set_physics trajectory
 
   position: =>
-    @extrapolate 'position', 'velocity'
+    @extrapolate 'position', 'velocity', 'acceleration'
   velocity: =>
-    @get_vector 'velocity'
+    @extrapolate 'velocity', 'acceleration'
 
   rotation: =>
     @extrapolate 'rotation', 'angular_velocity'
   angular_velocity: =>
-    @get_vector 'angular_velocity'
+    @extrapolate 'angular_velocity'
 
   # private methods
-  extrapolate: (position_attribute_name, velocity_attribute_name) =>
+  extrapolate: (position_attribute_name, velocity_attribute_name, acceleration_attribute_name) =>
     now = @now()
     trajectory = @trajectory now
-    position = new Vec3d trajectory[position_attribute_name]
-    velocity = new Vec3d trajectory[velocity_attribute_name]
-    elapsed  = now - trajectory.timestamp
+    # x = x0 + v0 t + 1/2 a t^2
+    position     = new Vec3d(trajectory[position_attribute_name]     ? [0,0,0])
+    velocity     = new Vec3d(trajectory[velocity_attribute_name]     ? [0,0,0])
+    acceleration = new Vec3d(trajectory[acceleration_attribute_name] ? [0,0,0])
+    elapsed      = now - trajectory.timestamp
+    # x += v_0 * t
     position.add velocity.scaled elapsed
+    # x += 1/2 * a * t^2
+    position.add acceleration.scaled elapsed * elapsed * 0.5
 
   get_vector: (name) =>
     new Vec3d @trajectory()[name]
@@ -67,16 +69,14 @@ class root.Body extends Backbone.Model
   set_physics: (props) =>
     unless props instanceof Array
       props = [props]
-    for segment in props
-      segment.timestamp        ?= @now()
-      segment.position         ?= @position()
-      segment.velocity         ?= @velocity()
-      segment.rotation         ?= @rotation()
-      segment.angular_velocity ?= @angular_velocity()
-    @set
-      trajectory: for segment in props
-        timestamp:        segment.timestamp
-        position:         segment.position.toArray()
-        velocity:         segment.velocity.toArray()
-        rotation:         segment.rotation.toArray()
-        angular_velocity: segment.angular_velocity.toArray()
+    trajectory = []
+    for segment_props in props
+      segment = {}
+      segment.timestamp = segment_props.timestamp ? @now()
+      segment.position          = (segment_props.position         ? @position()        ).toArray()
+      segment.velocity          = (segment_props.velocity         ? @velocity()        ).toArray()
+      segment.acceleration      = (segment_props.acceleration     ? new Vec3d          ).toArray()
+      segment.rotation          = (segment_props.rotation         ? @rotation()        ).toArray()
+      segment.angular_velocity  = (segment_props.angular_velocity ? @angular_velocity()).toArray()
+      trajectory.push segment
+    @set trajectory: trajectory
