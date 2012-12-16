@@ -12,22 +12,43 @@ class root.Body extends Backbone.Model
     @set_physics
       velocity: @velocity().add new Vec3d(x, y, z)
 
-  go_to_point: (point, acceleration_magnitude) =>
-    delta = point.minus @position()
-    acceleration = delta.normalized().scale acceleration_magnitude
-    distance = delta.length()
-    travel_time = Math.sqrt(2 * distance / acceleration_magnitude)
-    arrival_time = @now() + travel_time
-    velocity = new Vec3d
-    trajectory = [
-      {acceleration, velocity}
+  go_to_point: (destination, acceleration_magnitude) =>
+    # stopped  burn->  cruise  <-burn  stopped
+    #        0========--------========0
+    now = @now()
+    here = @position()
+    total_delta = destination.minus here
+    total_distance = total_delta.length()
+    acceleration = total_delta.normalized().scale acceleration_magnitude
+
+    third_distance = total_distance / 3
+    burn_inverval = Math.sqrt 2 * third_distance / acceleration_magnitude
+
+    cruising_velocity = acceleration.scaled burn_inverval
+    cruising_inverval = third_distance / cruising_velocity.length()
+
+    @set_physics [
       {
-        timestamp: arrival_time
-        position: point
-        velocity
+        acceleration: acceleration
+        velocity: new Vec3d
+      }
+      {
+        timestamp: now + burn_inverval
+        position: here.plus total_delta.scaled 1/3
+        velocity: cruising_velocity
+      }
+      {
+        timestamp: now + burn_inverval + cruising_inverval
+        position: here.plus total_delta.scaled 2/3
+        acceleration: acceleration.scaled -1
+        velocity: cruising_velocity
+      }
+      {
+        timestamp: now + burn_inverval + cruising_inverval + burn_inverval
+        position: destination
+        velocity: new Vec3d
       }
     ]
-    @set_physics trajectory
 
   position: =>
     @extrapolate 'position', 'velocity', 'acceleration'
