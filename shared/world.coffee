@@ -7,9 +7,9 @@ _        = window?._        ? require 'underscore'
 root = exports ? this
 class root.World extends Backbone.Model
   defaults:
-    light_direction:   [-0.25, -0.25, -1.0]
     ambient_color:     [ 0.2,   0.2,   0.2]
     directional_color: [ 0.8,   0.8,   0.8]
+    light_direction:   [-0.25, -0.25, -1.0]
     planets: []
 
   initialize: (options={}) =>
@@ -60,9 +60,7 @@ class root.World extends Backbone.Model
       else new Error("invalid helm command")
 
   is_ship_near_planet: =>
-    position = @camera.position()
-    @planets.any (planet) =>
-      planet.position().distance(position) < 1
+    @planets.any_within 1, of: @camera.position()
 
   set_new_course: (cursor_position) =>
     @set 'cursor_position', cursor_position.toArray()
