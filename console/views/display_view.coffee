@@ -12,6 +12,9 @@ class window.DisplayView extends Backbone.View
 
   render: =>
     @$el.html @template @context()
+    if window.cheat?
+      @$el.append new HelmView().render()
+      @$el.append new ScienceView().render()
     @$el
 
   run: =>

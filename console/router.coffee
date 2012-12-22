@@ -4,6 +4,7 @@ class window.Router extends Backbone.Router
 
   routes:
     '':        'root'
+    'cheat':   'cheat'
     'display': 'display'
     'helm':    'helm'
     'minimap': 'minimap'
@@ -11,6 +12,10 @@ class window.Router extends Backbone.Router
 
   root: (callback=->) =>
     @application_view.dismiss_children callback
+
+  cheat: (callback=->) =>
+    window.cheat = true
+    @root callback
 
   display: (callback=->) =>
     @root =>
