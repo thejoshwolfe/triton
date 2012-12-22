@@ -12,6 +12,9 @@ class root.Body extends Backbone.Model
     @set_physics
       velocity: @velocity().add new Vec3d(x, y, z)
 
+  angular_velocity: =>
+    @extrapolate 'angular_velocity'
+
   go_to_point: (destination, acceleration_magnitude) =>
     # stopped  burn->  cruise  <-burn  stopped
     #        0========--------========0
@@ -52,15 +55,12 @@ class root.Body extends Backbone.Model
 
   position: =>
     @extrapolate 'position', 'velocity', 'acceleration'
-    
-  velocity: =>
-    @extrapolate 'velocity', 'acceleration'
 
   rotation: =>
     @extrapolate 'rotation', 'angular_velocity'
 
-  angular_velocity: =>
-    @extrapolate 'angular_velocity'
+  velocity: =>
+    @extrapolate 'velocity', 'acceleration'
 
   # private methods
   extrapolate: (position_attribute_name, velocity_attribute_name, acceleration_attribute_name) =>
@@ -78,14 +78,6 @@ class root.Body extends Backbone.Model
 
   get_vector: (name) =>
     new Vec3d @trajectory()[name]
-  trajectory: (now) =>
-    segments = @get 'trajectory'
-    return segments[0] if segments.length is 1
-    now ?= @now()
-    for i in [segments.length-1..1] by -1
-      segment = segments[i]
-      return segment if segment.timestamp <= now
-    return segments[0]
 
   now: => new Date().getAdjustedTime()
 
@@ -103,3 +95,13 @@ class root.Body extends Backbone.Model
       segment.angular_velocity  = (segment_props.angular_velocity ? @angular_velocity()).toArray()
       trajectory.push segment
     @set trajectory: trajectory
+    
+  trajectory: (now) =>
+    segments = @get 'trajectory'
+    return segments[0] if segments.length is 1
+    now ?= @now()
+    for i in [segments.length-1..1] by -1
+      segment = segments[i]
+      return segment if segment.timestamp <= now
+    return segments[0]
+

@@ -11,9 +11,6 @@ module.exports = class App
     @reset()
 
   run: (port) =>
-    @web_server port
-
-  web_server: (port) =>
     app = express()
 
     app.configure ->
