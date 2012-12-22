@@ -41,7 +41,7 @@ class root.World extends Backbone.Model
     return unless (cursor_position = @get 'cursor_position')?
     cursor_position = new Vec3d cursor_position
     @set {cursor_position: null}, silent: true
-    @camera.go_to_point cursor_position, 0.0001
+    @camera.go_to_point cursor_position, 0.00001
 
   helm_command: (command) =>
     acceleration = 0.001
