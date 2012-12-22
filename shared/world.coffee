@@ -37,6 +37,12 @@ class root.World extends Backbone.Model
       planets: @planets.toJSON()
 
   # Instance Methods
+  engage: =>
+    return unless (cursor_position = @get 'cursor_position')?
+    cursor_position = new Vec3d cursor_position
+    @set {cursor_position: null}, silent: true
+    @camera.go_to_point cursor_position, 0.0001
+
   helm_command: (command) =>
     acceleration = 0.001
     switch command
@@ -53,11 +59,10 @@ class root.World extends Backbone.Model
       when 'engage'  then @engage()
       else new Error("invalid helm command")
 
-  engage: =>
-    return unless (cursor_position = @get 'cursor_position')?
-    cursor_position = new Vec3d cursor_position
-    @set {cursor_position: null}, silent: true
-    @camera.go_to_point cursor_position, 0.0001
+  is_ship_near_planet: =>
+    position = @camera.position()
+    @planets.any (planet) =>
+      planet.position().distance(position) < 1
 
   set_new_course: (cursor_position) =>
     @set 'cursor_position', cursor_position.toArray()

@@ -52,11 +52,13 @@ class root.Body extends Backbone.Model
 
   position: =>
     @extrapolate 'position', 'velocity', 'acceleration'
+    
   velocity: =>
     @extrapolate 'velocity', 'acceleration'
 
   rotation: =>
     @extrapolate 'rotation', 'angular_velocity'
+
   angular_velocity: =>
     @extrapolate 'angular_velocity'
 
