@@ -15,7 +15,7 @@ class window.Router extends Backbone.Router
 
   cheat: (callback=->) =>
     window.cheat = true
-    @root callback
+    @display callback
 
   display: (callback=->) =>
     @root =>

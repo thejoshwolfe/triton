@@ -3,18 +3,18 @@ class window.ScienceView extends Backbone.View
   className: 'science-view'
 
   initialize: =>
-    window.socket.on 'mission_blurb', (blurb) =>
-      $('.accept_mission')[if blurb? then 'addClass' else 'removeClass'] 'disabled'
-      $('#mission_blurb').text blurb ? ''
+    window.socket.on 'mission_blurb', (@mission_blurb) => @render()
     window.socket.emit 'request_mission_blurb'
 
-    window.socket.on 'scan_results', (text) =>
-      $('#scan_results').text text ? ''
+    window.socket.on 'scan_results', (@scan_success, @scan_message) => @render()
     window.socket.emit 'request_scan_results'
 
   run: =>
 
-  context: => {}
+  context: =>
+    mission_blurb: @mission_blurb
+    scan_message: @scan_message
+    scan_success: @scan_success
 
   events:
     'click .accept_mission': =>

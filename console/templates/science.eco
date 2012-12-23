@@ -1,20 +1,43 @@
-<h2>Communications</h2>
+
 <div class="row-fluid">
-  <button class="btn btn-large accept_mission">
-    Accept Mission
-  </button>
-</div>
-<div id="mission_blurb">
+  <div class="span4">
+    <h2>Communications</h2>
+
+    <div class="btn-group">
+      <button class="btn btn-large accept_mission <%= 'disabled' if @mission_blurb? %>">
+        Accept Mission
+      </button>
+    </div>
+
+    <br /><br />
+
+    <% if @mission_blurb?: %>
+      <div class="alert alert-success">
+        <strong>Current Mission:</strong> <%= @mission_blurb %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="span4">
+    <h2>Sensors</h2>
+
+    <div class="btn-group">
+      <button class="btn btn-large long_range_scan">
+        Long Range Scan
+      </button>
+      <button class="btn btn-large scan_planet">
+        Scan Planet
+      </button>
+    </div>
+
+    <br /><br />
+
+    <% if @scan_message?: %>
+      <div class="alert <%= if @scan_success then 'alert-success' else 'alert-error' %>">
+        <strong>Scan Results:</strong> <%= @scan_message %>
+      </div>
+    <% end %>
+  </div>
 </div>
 
-<h2>Sensors</h2>
-<div class="row-fluid">
-  <button class="btn btn-large long_range_scan">
-    Long Range Scan
-  </button>
-  <button class="btn btn-large scan_planet">
-    Scan Planet
-  </button>
-</div>
-<div id="scan_results">
-</div>
+

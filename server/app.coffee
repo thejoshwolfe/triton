@@ -32,7 +32,7 @@ module.exports = class App
       @world.helm_command data.command
 
     socket.on 'long_range_scan', =>
-      @io.sockets.emit 'scan_results', @scan_results = 'Go to a planet.'
+      @io.sockets.emit 'scan_results', @scan_success = false, @scan_message = 'Go to a planet.'
 
     socket.on 'new_course', (cursor_position) =>
       @world.set_new_course new Vec3d cursor_position
@@ -44,13 +44,14 @@ module.exports = class App
       socket.emit 'mission_blurb', @mission_blurb
 
     socket.on 'request_scan_results', =>
-      socket.emit 'scan_results', @scan_results
+      socket.emit 'scan_results', @scan_success, @scan_message
 
     socket.on 'reset', @reset
 
     socket.on 'scan_planet', =>
-      @scan_results = if @world.is_ship_near_planet() then 'Life signs.' else 'No planets within range.'
-      @io.sockets.emit 'scan_results', @scan_results
+      @scan_success = @world.is_ship_near_planet()
+      @scan_message = if @scan_success then 'Life signs.' else 'No planets within range.'
+      @io.sockets.emit 'scan_results', @scan_success, @scan_message
 
     socket.on 'time_check', (data) =>
       data.server_time = new Date().getTime()
@@ -62,7 +63,7 @@ module.exports = class App
     @world.on 'all', @send_world
     @send_world()
     @io?.sockets.emit 'mission_blurb', @mission_blurb = null
-    @io?.sockets.emit 'scan_results', @scan_results = null
+    @io?.sockets.emit 'scan_results', @scan_success = null, @scan_message = null
 
   send_world: =>
     return unless @io?
