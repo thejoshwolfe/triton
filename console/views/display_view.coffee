@@ -15,6 +15,7 @@ class window.DisplayView extends Backbone.View
     if window.cheat?
       @$el.append new HelmView().render()
       @$el.append new ScienceView().render()
+      @$el.append new BreastsView().render()
     @$el
 
   run: =>

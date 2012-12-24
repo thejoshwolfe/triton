@@ -83,7 +83,7 @@ class window.MinimapView extends Backbone.View
     y -= @canvas.offsetTop
 
     cursor_position = @mapToWorld new Vec3d(x,y,0)
-    window.socket.emit 'new_course', cursor_position.toArray()
+    window.socket.emit 'set_new_course', cursor_position.toArray()
     @world.set_new_course cursor_position
 
   mouse_double_click: =>

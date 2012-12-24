@@ -47,7 +47,6 @@ class window.ApplicationView extends Backbone.View
     $('.nav-collapse li.science').addClass('active')
     @child_view = new ScienceView()
     @render()
-    @child_view.run()
     callback()
 
   time_update: (data) =>

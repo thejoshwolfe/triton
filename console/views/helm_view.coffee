@@ -43,4 +43,4 @@ class window.HelmView extends Backbone.View
 
   # Instance Methods
   emit: (command) =>
-    window.socket.emit 'helm', command: command
+    window.socket.emit 'helm', command

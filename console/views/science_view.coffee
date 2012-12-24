@@ -3,21 +3,13 @@ class window.ScienceView extends Backbone.View
   className: 'science-view'
 
   initialize: =>
-    window.socket.on   'mission_blurbs', (mission_blurbs_json) => 
-      @mission_blurbs = new Blurbs mission_blurbs_json
+    window.socket.on 'world', (world_json) => 
+      @mission = new Mission world_json.mission
       @render()
-    window.socket.emit 'request_mission_blurbs'
-
-    window.socket.on   'scan_results',     (@scan_success, @scan_message) => @render()
-    window.socket.on   'teleport_results', (@teleport_success, @teleport_message) => @render()
-
-  run: =>
+    window.socket.emit 'request_world'
 
   context: =>
-    scan_message:     @scan_message
-    scan_success:     @scan_success
-    teleport_message: @teleport_message
-    teleport_success: @teleport_success
+    mission:          @mission?.toJSON()
 
   events:
     'click .accept_mission':  'accept_mission'

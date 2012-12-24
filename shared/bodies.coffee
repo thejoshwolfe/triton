@@ -6,6 +6,6 @@ root = exports ? this
 class root.Bodies extends Backbone.Collection
   model: Body
 
-  any_within: (distance, of: position) =>
-    @any (body) =>
+  find_within: (distance, of: position) =>
+    @find (body) =>
       body.position().distance(position) < distance

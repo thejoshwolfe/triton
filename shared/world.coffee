@@ -19,6 +19,8 @@ class root.World extends Backbone.Model
       @trigger "camera:#{event}", args...
 
     @mission = new Mission @get 'mission'
+    @mission.on 'all', (event, args...) =>
+      @trigger "mission:#{event}", args...
 
     @planets = new Bodies options.planets
     unless @planets.size()
@@ -44,8 +46,9 @@ class root.World extends Backbone.Model
   accept_mission: =>
     @mission.accept()
 
-  mission_accepted: =>
-    @mission.is_accepted()
+  beam_aboard: =>
+    planet = @planets.find_within 1, of: @camera.position()
+    @mission.beam_aboard planet
 
   engage: =>
     return unless (cursor_position = @get 'cursor_position')?
@@ -69,8 +72,15 @@ class root.World extends Backbone.Model
       when 'engage'  then @engage()
       else new Error("invalid helm command")
 
-  is_ship_near_planet: =>
-    @planets.any_within 1, of: @camera.position()
+  is_mission_accepted: =>
+    @mission.is_accepted()
+
+  long_range_scan: =>
+    @mission.long_range_scan()
+
+  scan_planet: =>
+    planet = @planets.find_within 1, of: @camera.position()
+    @mission.scan planet
 
   set_new_course: (cursor_position) =>
-    @set 'cursor_position', cursor_position.toArray()
+    @set 'cursor_position', new Vec3d(cursor_position).toArray()
