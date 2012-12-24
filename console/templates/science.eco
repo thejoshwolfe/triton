@@ -4,16 +4,16 @@
     <h2>Communications</h2>
 
     <div class="btn-group">
-      <button class="btn btn-large accept_mission <%= 'disabled' if @mission_blurb? %>">
+      <button class="btn btn-large accept_mission <%= 'disabled' if _.any @mission_blurbs %>">
         Accept Mission
       </button>
     </div>
 
     <br /><br />
 
-    <% if @mission_blurb?: %>
-      <div class="alert alert-success">
-        <strong>Current Mission:</strong> <%= @mission_blurb %>
+    <% _.each @mission_blurbs, (mission_blurb) =>: %>
+      <div class="alert alert-<%= mission_blurb.status %>">
+        <strong><%= mission_blurb.type %>:</strong> <%= mission_blurb.message %>
       </div>
     <% end %>
   </div>
@@ -35,6 +35,24 @@
     <% if @scan_message?: %>
       <div class="alert <%= if @scan_success then 'alert-success' else 'alert-error' %>">
         <strong>Scan Results:</strong> <%= @scan_message %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="span4">
+    <h2>Teleporter</h2>
+
+    <div class="btn-group">
+      <button class="btn btn-large beam_aboard">
+        Beam Aboard
+      </button>
+    </div>
+
+    <br /><br />
+
+    <% if @teleport_message?: %>
+      <div class="alert <%= if @teleport_success then 'alert-success' else 'alert-error' %>">
+        <strong>Teleportation Result:</strong> <%= @teleport_message %>
       </div>
     <% end %>
   </div>
