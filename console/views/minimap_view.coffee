@@ -19,7 +19,7 @@ class window.MinimapView extends Backbone.View
 
   events:
     'click .engage' : =>
-      window.socket.emit 'helm', command: 'engage'
+      window.socket.emit 'helm', 'engage'
 
   run: =>
     @canvas = document.getElementById('minimap-canvas')
