@@ -17,6 +17,12 @@ class window.ApplicationView extends Backbone.View
     $('.nav-collapse li').removeClass('active')
     callback()
 
+  navigate_to_breasts: (callback=->) =>
+    $('.nav-collapse li.breasts').addClass('active')
+    @child_view = new BreastsView()
+    @render()
+    callback()
+
   navigate_to_display: (callback=->) =>
     $('.nav-collapse li.display').addClass('active')
     @child_view = new DisplayView()

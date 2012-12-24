@@ -13,6 +13,10 @@ body, div, span, img, a, button {
   user-select: none;
 }
 
+.breasts-view {
+  font-size: 1.5em;
+}
+
 .helm-controls {
   text-align: center;
 }

@@ -1,16 +1,14 @@
 require './date'
-Http     = require 'http'
-Path     = require 'path'
-SocketIO = require 'socket.io'
-express  = require 'express'
-{World}  = require './world'
-{Blurbs} = require './blurbs'
-{Vec3d}  = require './vec3d'
+Http      = require 'http'
+Path      = require 'path'
+SocketIO  = require 'socket.io'
+express   = require 'express'
+{World}   = require './world'
+{Vec3d}   = require './vec3d'
+{Mission} = require './mission'
 
 module.exports = class App
   constructor: (args={}) ->
-    @mission_blurbs = new Blurbs
-    @mission_blurbs.on 'all', @send_mission_blurbs
     @reset()
 
   run: (port) =>
@@ -29,18 +27,14 @@ module.exports = class App
 
   events: (socket) =>
     socket.on 'accept_mission', =>
-      unless @mission_blurbs.any()
-        @mission_blurbs.reset
-          message: 'Cure diseases, go to a planet to collect a life form.'
-          status:  ''
-          type:    'Objective'
+      @world.accept_mission() unless @world.mission_accepted()
 
     socket.on 'beam_aboard', =>
-      if @mission_blurbs.any() and @mission_blurbs.size() < 3 and @scan_success
+      if @blurbs.any() and @blurbs.size() < 3 and @scan_success
         @teleport_success = @world.is_ship_near_planet()
         @teleport_message = if @teleport_success then 'Life form is aboard.' else 'No planets within range.'
 
-        @mission_blurbs.add [
+        @blurbs.add [
             message: 'Life form aboard'
             status:  'success'
             type:    'Objective Complete'
@@ -67,9 +61,6 @@ module.exports = class App
     socket.on 'request_world', =>
       socket.emit 'world', @world.toJSON()
 
-    socket.on 'request_mission_blurbs', => 
-      socket.emit 'mission_blurbs', @mission_blurbs.toJSON()
-
     socket.on 'request_scan_results', =>
       socket.emit 'scan_results', @scan_success, @scan_message
 
@@ -89,11 +80,7 @@ module.exports = class App
     @world = new World()
     @world.on 'all', @send_world
     @send_world()
-    @mission_blurbs.reset()
     @io?.sockets.emit 'scan_results', @scan_success = null, @scan_message = null
-
-  send_mission_blurbs: =>
-    @io?.sockets.emit 'mission_blurbs', @mission_blurbs.toJSON()
 
   send_world: =>
     return unless @io?

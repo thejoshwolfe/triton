@@ -14,7 +14,6 @@ class window.ScienceView extends Backbone.View
   run: =>
 
   context: =>
-    mission_blurbs:   @mission_blurbs?.toJSON()
     scan_message:     @scan_message
     scan_success:     @scan_success
     teleport_message: @teleport_message
@@ -33,7 +32,7 @@ class window.ScienceView extends Backbone.View
   # Event Handlers
   accept_mission: ($event) =>
     $event.preventDefault()
-    return if @mission_blurbs.any()
+    return if $($event.currentTarget).hasClass 'disabled'
     window.socket.emit 'accept_mission'
 
   beam_aboard: ($event) =>

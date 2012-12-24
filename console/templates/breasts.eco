@@ -1,0 +1,15 @@
+<div class="row-fluid">
+  <div class="span12">
+    <h1>Breasts</h1>
+
+    <% if @mission?.title? : %>
+      <h3>Current Mission: <%= @mission.title %></h3>
+    <% end %>
+
+    <% _.each @mission?.blurbs, (blurb) =>: %>
+      <div class="alert alert-block alert-<%= blurb.status %>">
+        <strong><%= blurb.type %>:</strong> <%= blurb.message %>
+      </div>
+    <% end %>
+  </div>
+</div>

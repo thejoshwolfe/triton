@@ -1,8 +1,9 @@
-Backbone = window?.Backbone ? require 'backbone'
-_        = window?._        ? require 'underscore'
-{Bodies} = window ? require './bodies'
-{Body}   = window ? require './body'
-{Vec3d}  = window ? require './vec3d'
+Backbone  = window?.Backbone ? require 'backbone'
+_         = window?._        ? require 'underscore'
+{Bodies}  = window ? require './bodies'
+{Body}    = window ? require './body'
+{Mission} = window ? require './mission'
+{Vec3d}   = window ? require './vec3d'
 
 root = exports ? this
 class root.World extends Backbone.Model
@@ -16,6 +17,8 @@ class root.World extends Backbone.Model
     @camera = new Body @get 'camera'
     @camera.on 'all', (event, args...) =>
       @trigger "camera:#{event}", args...
+
+    @mission = new Mission @get 'mission'
 
     @planets = new Bodies options.planets
     unless @planets.size()
@@ -34,9 +37,16 @@ class root.World extends Backbone.Model
   toJSON: =>
     _.extend super,
       camera:  @camera.toJSON()
+      mission: @mission.toJSON()
       planets: @planets.toJSON()
 
   # Instance Methods
+  accept_mission: =>
+    @mission.accept()
+
+  mission_accepted: =>
+    @mission.is_accepted()
+
   engage: =>
     return unless (cursor_position = @get 'cursor_position')?
     cursor_position = new Vec3d cursor_position
