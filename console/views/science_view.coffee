@@ -15,7 +15,7 @@ class window.ScienceView extends Backbone.View
   events:
     'click .accept_mission':  'accept_mission'
     'click .beam_aboard':     'beam_aboard'
-    'click .do_science':     'do_science'
+    'click .do_science':      'do_science'
     'click .long_range_scan': 'long_range_scan'
     'click .scan_planet':     'scan_planet'
 
@@ -35,7 +35,7 @@ class window.ScienceView extends Backbone.View
 
   do_science: ($event) =>
     $event.preventDefault()
-    window.socket.emit 'do_science'
+    window.socket.emit 'do_science', @$('.quantity-of-science').val()
 
   long_range_scan: ($event) =>
     $event.preventDefault()

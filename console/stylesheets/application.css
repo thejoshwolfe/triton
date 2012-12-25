@@ -13,6 +13,10 @@ body, div, span, img, a, button {
   user-select: none;
 }
 
+label {
+  font-size: 18px;
+}
+
 .breasts-view {
   font-size: 1.5em;
 }
@@ -27,6 +31,11 @@ body, div, span, img, a, button {
 
 .helm-controls button.up {
   margin-left: 3px;
+}
+
+.input-append input.input-tall {
+  font-size: 17.5px;
+  padding: 11px 19px;
 }
 
 .minimap-view .controls {

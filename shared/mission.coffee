@@ -47,8 +47,28 @@ class root.Mission extends Backbone.Model
         status:  'error'
         type:    'Teleport Result'
 
-  do_science: =>
-    if @get('stage') == 2
+  do_science: (quantity_of_science) =>
+    quantity_of_science = parseInt quantity_of_science
+
+    unless @get('stage') == 2
+      return @blurbs.add
+        message: 'Nothing to do science on.'
+        status:  'error'
+        type:    'Science Result'
+
+
+    if quantity_of_science > 75
+      @set {stage: -1}, silent: true
+      @blurbs.add [
+        message: 'Too much science was done, the life form died.'
+        status:  'error'
+        type:    'Science Result'
+      ,
+        message: 'You failed the mission.'
+        status:  'error'
+        type:    'Objective'
+      ]
+    else if quantity_of_science == 75
       @set {stage: 3}, silent: true
       @blurbs.add [
         message: 'Science has been done.'
@@ -61,7 +81,7 @@ class root.Mission extends Backbone.Model
       ]
     else
       @blurbs.add
-        message: 'Nothing to do science on.'
+        message: 'Nothing found. Increase science and try again.'
         status:  'error'
         type:    'Science Result'
 
