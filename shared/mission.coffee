@@ -47,6 +47,24 @@ class root.Mission extends Backbone.Model
         status:  'error'
         type:    'Teleport Result'
 
+  do_science: =>
+    if @get('stage') == 2
+      @set {stage: 3}, silent: true
+      @blurbs.add [
+        message: 'Science has been done.'
+        status:  'success'
+        type:    'Science Result'
+      ,
+        message: 'Return the life form back to the planet'
+        status:  ''
+        type:    'Objective'
+      ]
+    else
+      @blurbs.add
+        message: 'Nothing to do science on.'
+        status:  'error'
+        type:    'Science Result'
+
   is_accepted: =>
     @get('stage') > 0
 

@@ -20,6 +20,15 @@
         Scan Planet
       </button>
     </div>
+
+    <br /><br />
+
+    <h2>Science Doing</h2>
+    <div class="btn-group">
+      <button class="btn btn-large do_science">
+        Do Science
+      </button>
+    </div>
   </div>
 
   <div class="span4">

@@ -50,6 +50,9 @@ class root.World extends Backbone.Model
     planet = @planets.find_within 1, of: @camera.position()
     @mission.beam_aboard planet
 
+  do_science: =>
+    @mission.do_science()
+
   engage: =>
     return unless (cursor_position = @get 'cursor_position')?
     cursor_position = new Vec3d cursor_position

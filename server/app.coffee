@@ -27,6 +27,7 @@ module.exports = class App
   events: (socket) =>
     socket.on 'accept_mission',  @world.accept_mission
     socket.on 'beam_aboard',     @world.beam_aboard
+    socket.on 'do_science',      @world.do_science
     socket.on 'helm',            @world.helm_command
     socket.on 'long_range_scan', @world.long_range_scan
     socket.on 'reset',           @reset
