@@ -9,7 +9,8 @@ class window.ScienceView extends Backbone.View
     window.socket.emit 'request_world'
 
   context: =>
-    mission:          @mission?.toJSON()
+    mission: @mission?.toJSON()
+    cid:     @cid
 
   events:
     'click .accept_mission':  'accept_mission'

@@ -24,11 +24,25 @@
     <br /><br />
 
     <h2>Science Doing</h2>
-    <div class="btn-group">
-      <button class="btn btn-large do_science">
-        Do Science
-      </button>
-    </div>
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label" for="quantity-of-science-<%= @cid %>">Amount of science:</label>
+        <div class="controls">
+          <input type="text" 
+                 name="quantity-of-science-<%= @cid %>" 
+                 class="quantity-of-science search-query input-mini" 
+                 placeholder="0-100" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="controls">
+          <button class="btn btn-large do_science">
+            Do Science
+          </button>
+        </div>
+      </div>
+    </form>
   </div>
 
   <div class="span4">
