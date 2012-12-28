@@ -36,7 +36,7 @@
   <script type="text/javascript" src="/shared/bodies.js"></script>
   <script type="text/javascript" src="/shared/mission.js"></script>
   <script type="text/javascript" src="/shared/world.js"></script>
-  <script type="text/javascript" src="/router.js"></script>
+  <script type="text/javascript" src="/console_app.js"></script>
   <script type="text/javascript" src="/templates/jst.js"></script>
   <script type="text/javascript" src="/templates/breasts.js"></script>
   <script type="text/javascript" src="/templates/display.js"></script>
@@ -53,7 +53,8 @@
 
   <script type="text/javascript">
     $(function() {
-      window.router = new Router();
+      window.console_app = new ConsoleApp();
+      window.console_app.start();
     });
   </script>
 </head>

@@ -1,14 +1,15 @@
-class window.Router extends Backbone.Router
+class window.ConsoleApp extends Backbone.Router
   initialize: =>
     window.socket = io.connect();
-    Backbone.history.start();
-
     window.socket.on 'time_update', @time_update
+
+  start: =>
+    Backbone.history.start();
     @time_update client_time: new Date().getTime()
 
   routes:
     '':        'root'
-    'breasts':   'breasts'
+    'breasts': 'breasts'
     'cheat':   'cheat'
     'display': 'display'
     'helm':    'helm'
@@ -17,6 +18,7 @@ class window.Router extends Backbone.Router
 
   root: (callback=->) =>
     @view?.remove()
+    @view = null
 
   breasts: (callback=->) =>
     @display_view new BreastsView
