@@ -28,7 +28,7 @@
       <label class="control-label">
         Amount of science:
         <div class="input-append">
-          <input type="text" class="quantity-of-science search-query input-mini input-tall" placeholder="0-100" />
+          <input type="text" class="quantity-of-science search-query input-mini input-tall" placeholder="0-100" value="<%= @quantity_of_science %>" />
           <button type="submit" class="btn btn-large btn-primary do_science">Do Science</button>
         </div>
       </label>

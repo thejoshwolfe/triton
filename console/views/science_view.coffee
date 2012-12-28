@@ -3,21 +3,23 @@ class window.ScienceView extends Backbone.View
   className: 'science-view'
 
   initialize: =>
-    window.socket.on 'world', (world_json) => 
+    window.socket.on 'world', (world_json) =>
       @mission = new Mission world_json.mission
       @render()
     window.socket.emit 'request_world'
 
   context: =>
-    mission: @mission?.toJSON()
     cid:     @cid
+    mission: @mission?.toJSON()
+    quantity_of_science: @quantity_of_science
 
   events:
-    'click .accept_mission':  'accept_mission'
-    'click .beam_aboard':     'beam_aboard'
-    'click .do_science':      'do_science'
-    'click .long_range_scan': 'long_range_scan'
-    'click .scan_planet':     'scan_planet'
+    'keyup .quantity-of-science': 'change_quantity_of_science'
+    'click .accept_mission':      'accept_mission'
+    'click .beam_aboard':         'beam_aboard'
+    'click .do_science':          'do_science'
+    'click .long_range_scan':     'long_range_scan'
+    'click .scan_planet':         'scan_planet'
 
   render: =>
     @$el.html @template @context()
@@ -33,9 +35,12 @@ class window.ScienceView extends Backbone.View
     $event.preventDefault()
     window.socket.emit 'beam_aboard'
 
+  change_quantity_of_science: ($event) =>
+    @quantity_of_science = @$('.quantity-of-science').val()
+
   do_science: ($event) =>
     $event.preventDefault()
-    window.socket.emit 'do_science', @$('.quantity-of-science').val()
+    window.socket.emit 'do_science', @quantity_of_science
 
   long_range_scan: ($event) =>
     $event.preventDefault()
