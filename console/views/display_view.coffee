@@ -1,4 +1,4 @@
-class window.DisplayView extends Backbone.View
+class window.DisplayView extends View
   template: JST['console/templates/display']
   className: 'display-view'
 

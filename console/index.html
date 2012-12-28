@@ -43,20 +43,17 @@
   <script type="text/javascript" src="/templates/helm.js"></script>
   <script type="text/javascript" src="/templates/minimap.js"></script>
   <script type="text/javascript" src="/templates/science.js"></script>
+  <script type="text/javascript" src="/views/view.js"></script>
   <script type="text/javascript" src="/views/breasts_view.js"></script>
   <script type="text/javascript" src="/views/display_view.js"></script>
   <script type="text/javascript" src="/views/display_webgl_view.js"></script>
   <script type="text/javascript" src="/views/helm_view.js"></script>
   <script type="text/javascript" src="/views/minimap_view.js"></script>
   <script type="text/javascript" src="/views/science_view.js"></script>
-  <script type="text/javascript" src="/views/application_view.js"></script>
 
   <script type="text/javascript">
     $(function() {
-      window.socket = io.connect();
-
-      window.router = new Router(new ApplicationView());
-      Backbone.history.start();
+      window.router = new Router();
     });
   </script>
 </head>

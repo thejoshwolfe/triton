@@ -1,4 +1,4 @@
-class window.ScienceView extends Backbone.View
+class window.ScienceView extends View
   template: JST['console/templates/science']
   className: 'science-view'
 

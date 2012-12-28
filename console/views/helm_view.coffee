@@ -1,4 +1,4 @@
-class window.HelmView extends Backbone.View
+class window.HelmView extends View
   template: JST['console/templates/helm']
   className: 'helm-view'
 

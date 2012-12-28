@@ -1,4 +1,4 @@
-class window.MinimapView extends Backbone.View
+class window.MinimapView extends View
   template: JST['console/templates/minimap']
   className: 'minimap-view'
   scale: 20
