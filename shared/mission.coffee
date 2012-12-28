@@ -74,14 +74,14 @@ class root.Mission extends Backbone.Model
         type:    'Objective'
       ]
     else if quantity_of_science == 75
-      @set {stage: 3}, silent: true
+      @set {stage: -1}, silent: true
       @blurbs.add [
         message: 'Science has been done. For some reason the mother is now OK with us having her baby'
         status:  'success'
         type:    'Science Result'
       ,
-        message: 'Return the life form back to the planet'
-        status:  ''
+        message: 'Mission Accomplished!'
+        status:  'success'
         type:    'Objective'
       ]
     else
