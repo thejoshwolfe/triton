@@ -50,7 +50,9 @@ class window.ApplicationView extends Backbone.View
     callback()
 
   time_update: (data) =>
+    previous_offset = _.clone window.time_offset || 3000
     window.time_offset = (window.time_offset + data.server_time - data.client_time) / 2
+
     _.delay =>
       window.socket.emit 'time_check', client_time: new Date().getTime()
-    , 500
+    , 60000 - (Math.abs(previous_offset - window.time_offset) * 6000) # If off by more than 0.1 second, send another update immediatly
