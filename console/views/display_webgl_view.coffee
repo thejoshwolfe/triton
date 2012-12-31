@@ -3,6 +3,8 @@ class window.DisplayWebGLView
     @destroyed = true
 
   run: =>
+    return window.catalog.once 'reset', @run unless window.catalog.is_loaded
+
     @gl = @initGL()
     window.gl = @gl
     @initShaders()
@@ -116,146 +118,31 @@ class window.DisplayWebGLView
     @initCube()
 
   initCube: =>
+    box = window.catalog.meshes.box
+
     @cubeVertexPositionBuffer = @gl.createBuffer()
     @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
-
-    vertices = [
-      # Front Face
-      -1.0, -1.0,  1.0
-       1.0, -1.0,  1.0
-       1.0,  1.0,  1.0
-      -1.0,  1.0,  1.0
-      # Back Face
-      -1.0, -1.0, -1.0
-      -1.0,  1.0, -1.0
-       1.0,  1.0, -1.0
-       1.0, -1.0, -1.0
-      # Top Face
-      -1.0,  1.0, -1.0
-      -1.0,  1.0,  1.0
-       1.0,  1.0,  1.0
-       1.0,  1.0, -1.0
-      # Bottom Face
-      -1.0, -1.0, -1.0
-       1.0, -1.0, -1.0
-       1.0, -1.0,  1.0
-      -1.0, -1.0,  1.0
-      # Right Face
-       1.0, -1.0, -1.0
-       1.0,  1.0, -1.0
-       1.0,  1.0,  1.0
-       1.0, -1.0,  1.0
-      # Left Face
-      -1.0, -1.0, -1.0
-      -1.0, -1.0,  1.0
-      -1.0,  1.0,  1.0
-      -1.0,  1.0, -1.0
-    ]
-
-    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(vertices), @gl.STATIC_DRAW
-    @cubeVertexPositionBuffer.itemSize = 3
-    @cubeVertexPositionBuffer.numItems = 24
+    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(box.vertices.points), @gl.STATIC_DRAW
+    @cubeVertexPositionBuffer.itemSize = box.vertices.item_size
+    @cubeVertexPositionBuffer.numItems = box.vertices.number_of_items
 
     @cubeVertexTextureCoordBuffer = @gl.createBuffer()
     @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexTextureCoordBuffer
-    textureCoords = [
-      # Front Face
-      0.0, 0.0
-      1.0, 0.0
-      1.0, 1.0
-      0.0, 1.0
-
-      # Back Face
-      1.0, 0.0
-      1.0, 1.0
-      0.0, 1.0
-      0.0, 0.0
-
-      # Top Face
-      0.0, 1.0
-      0.0, 0.0
-      1.0, 0.0
-      1.0, 1.0
-
-      # Bottom Face
-      1.0, 1.0
-      0.0, 1.0
-      0.0, 0.0
-      1.0, 0.0
-
-      # Right Face
-      1.0, 0.0
-      1.0, 1.0
-      0.0, 1.0
-      0.0, 0.0
-
-      # Left Face
-      0.0, 0.0
-      1.0, 0.0
-      1.0, 1.0
-      0.0, 1.0
-    ]
-    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(textureCoords), @gl.STATIC_DRAW
-    @cubeVertexTextureCoordBuffer.itemSize = 2
-    @cubeVertexTextureCoordBuffer.numItems = 24
+    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(box.texture.points), @gl.STATIC_DRAW
+    @cubeVertexTextureCoordBuffer.itemSize = box.texture.item_size
+    @cubeVertexTextureCoordBuffer.numItems = box.texture.number_of_items
 
     @cubeVertexNormalBuffer = @gl.createBuffer()
     @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexNormalBuffer
-    vertexNomals = [
-      # Front face
-       0.0,  0.0,  1.0
-       0.0,  0.0,  1.0
-       0.0,  0.0,  1.0
-       0.0,  0.0,  1.0
-
-      # Back face
-       0.0,  0.0, -1.0
-       0.0,  0.0, -1.0
-       0.0,  0.0, -1.0
-       0.0,  0.0, -1.0
-
-      # Top face
-       0.0,  1.0,  0.0
-       0.0,  1.0,  0.0
-       0.0,  1.0,  0.0
-       0.0,  1.0,  0.0
-
-      # Bottom face
-       0.0, -1.0,  0.0
-       0.0, -1.0,  0.0
-       0.0, -1.0,  0.0
-       0.0, -1.0,  0.0
-
-      # Right face
-       1.0,  0.0,  0.0
-       1.0,  0.0,  0.0
-       1.0,  0.0,  0.0
-       1.0,  0.0,  0.0
-
-      # Left face
-      -1.0,  0.0,  0.0
-      -1.0,  0.0,  0.0
-      -1.0,  0.0,  0.0
-      -1.0,  0.0,  0.0
-    ]
-
-    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(vertexNomals), @gl.STATIC_DRAW
-    @cubeVertexNormalBuffer.itemSize = 3
-    @cubeVertexNormalBuffer.numItems = 24
+    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(box.vertex_normals.points), @gl.STATIC_DRAW
+    @cubeVertexNormalBuffer.itemSize = box.vertex_normals.item_size
+    @cubeVertexNormalBuffer.numItems = box.vertex_normals.number_of_items
 
     @cubeVertexIndexBuffer = @gl.createBuffer()
     @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
-    cubeVertexIndeces = [
-      0,  1,  2,    0,  2,  3   # Front Face
-      4,  5,  6,    4,  6,  7   # Back Face
-      8,  9,  10,   8,  10, 11  # Top Face
-      12, 13, 14,   12, 14, 15  # Botom Face
-      16, 17, 18,   16, 18, 19  # Right Face
-      20, 21, 22,   20, 22, 23  # Left Face
-    ]
-    @gl.bufferData @gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndeces), @gl.STATIC_DRAW
-    @cubeVertexIndexBuffer.itemSize = 1
-    @cubeVertexIndexBuffer.numItems = 36
+    @gl.bufferData @gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(box.vertex_indeces.points), @gl.STATIC_DRAW
+    @cubeVertexIndexBuffer.itemSize = box.vertex_indeces.item_size
+    @cubeVertexIndexBuffer.numItems = box.vertex_indeces.number_of_items
 
   initGL: =>
     try

@@ -4,3 +4,4 @@ tmp/
 lib/
 display/out/
 .c9revisions/
+console/meshes/*.json

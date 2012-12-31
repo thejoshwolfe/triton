@@ -3,6 +3,9 @@ class window.ConsoleApp extends Backbone.Router
     window.socket = io.connect();
     window.socket.on 'time_update', @time_update
 
+    window.catalog = new Catalog()
+    window.catalog.fetch()
+
   start: =>
     Backbone.history.start();
     @time_update client_time: new Date().getTime()
