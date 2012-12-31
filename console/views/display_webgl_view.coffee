@@ -26,6 +26,8 @@ class window.DisplayWebGLView
     degrees * Math.PI / 180
 
   drawScene: =>
+    box = window.catalog.meshes.box
+
     @gl.viewport 0, 0, @gl.viewportWidth, @gl.viewportHeight
     @gl.clear @gl.COLOR_BUFFER_BIT | @gl.DEPTH_BUFFER_BIT
     mat4.perspective 45, @gl.viewportWidth / @gl.viewportHeight, 0.1, 100.0, @pMatrix
@@ -49,14 +51,14 @@ class window.DisplayWebGLView
         a[i] = 1
         mat4.rotate @mvMatrix, @degToRad(axis), a
 
-      @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
-      @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, @cubeVertexPositionBuffer.itemSize, @gl.FLOAT, false, 0, 0
+      @gl.bindBuffer @gl.ARRAY_BUFFER, box.vertices.buffer
+      @gl.vertexAttribPointer @shaderProgram.vertexPositionAttribute, box.vertices.item_size, @gl.FLOAT, false, 0, 0
 
-      @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexNormalBuffer
-      @gl.vertexAttribPointer @shaderProgram.vertexNormalAttribute, @cubeVertexNormalBuffer.itemSize, @gl.FLOAT, false, 0, 0
+      @gl.bindBuffer @gl.ARRAY_BUFFER, box.vertex_normals.buffer
+      @gl.vertexAttribPointer @shaderProgram.vertexNormalAttribute, box.vertex_normals.item_size, @gl.FLOAT, false, 0, 0
 
-      @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexTextureCoordBuffer
-      @gl.vertexAttribPointer @shaderProgram.textureCoordAttribute, @cubeVertexTextureCoordBuffer.itemSize, @gl.FLOAT, false, 0, 0
+      @gl.bindBuffer @gl.ARRAY_BUFFER, box.texture.buffer
+      @gl.vertexAttribPointer @shaderProgram.textureCoordAttribute, box.texture.item_size, @gl.FLOAT, false, 0, 0
 
       @gl.activeTexture @gl.TEXTURE0
       @gl.bindTexture @gl.TEXTURE_2D, @crateTexture
@@ -71,9 +73,9 @@ class window.DisplayWebGLView
 
       @gl.uniform3f @shaderProgram.directionalColorUniform, world_json.directional_color...
 
-      @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
+      @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, box.vertex_indeces.buffer
       @setMatrixUniforms()
-      @gl.drawElements @gl.TRIANGLES, @cubeVertexIndexBuffer.numItems, @gl.UNSIGNED_SHORT, 0
+      @gl.drawElements @gl.TRIANGLES, box.vertex_indeces.number_of_items, @gl.UNSIGNED_SHORT, 0
 
       @mvPopMatrix()
 
@@ -120,29 +122,21 @@ class window.DisplayWebGLView
   initCube: =>
     box = window.catalog.meshes.box
 
-    @cubeVertexPositionBuffer = @gl.createBuffer()
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexPositionBuffer
+    box.vertices.buffer = @gl.createBuffer()
+    @gl.bindBuffer @gl.ARRAY_BUFFER, box.vertices.buffer
     @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(box.vertices.points), @gl.STATIC_DRAW
-    @cubeVertexPositionBuffer.itemSize = box.vertices.item_size
-    @cubeVertexPositionBuffer.numItems = box.vertices.number_of_items
 
-    @cubeVertexTextureCoordBuffer = @gl.createBuffer()
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexTextureCoordBuffer
-    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(box.texture.points), @gl.STATIC_DRAW
-    @cubeVertexTextureCoordBuffer.itemSize = box.texture.item_size
-    @cubeVertexTextureCoordBuffer.numItems = box.texture.number_of_items
-
-    @cubeVertexNormalBuffer = @gl.createBuffer()
-    @gl.bindBuffer @gl.ARRAY_BUFFER, @cubeVertexNormalBuffer
+    box.vertex_normals.buffer = @gl.createBuffer()
+    @gl.bindBuffer @gl.ARRAY_BUFFER, box.vertex_normals.buffer
     @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(box.vertex_normals.points), @gl.STATIC_DRAW
-    @cubeVertexNormalBuffer.itemSize = box.vertex_normals.item_size
-    @cubeVertexNormalBuffer.numItems = box.vertex_normals.number_of_items
 
-    @cubeVertexIndexBuffer = @gl.createBuffer()
-    @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, @cubeVertexIndexBuffer
+    box.texture.buffer = @gl.createBuffer()
+    @gl.bindBuffer @gl.ARRAY_BUFFER, box.texture.buffer
+    @gl.bufferData @gl.ARRAY_BUFFER, new Float32Array(box.texture.points), @gl.STATIC_DRAW
+
+    box.vertex_indeces.buffer = @gl.createBuffer()
+    @gl.bindBuffer @gl.ELEMENT_ARRAY_BUFFER, box.vertex_indeces.buffer
     @gl.bufferData @gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(box.vertex_indeces.points), @gl.STATIC_DRAW
-    @cubeVertexIndexBuffer.itemSize = box.vertex_indeces.item_size
-    @cubeVertexIndexBuffer.numItems = box.vertex_indeces.number_of_items
 
   initGL: =>
     try
