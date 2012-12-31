@@ -1,9 +1,13 @@
 class window.DisplayWebGLView
+  constructor: ->
+    @catalog = new Catalog()
+    @catalog.fetch()
+
   destroy: =>
     @destroyed = true
 
   run: =>
-    return window.catalog.once 'reset', @run unless window.catalog.is_loaded
+    return @catalog.once 'reset', @run unless @catalog.is_fetched
 
     @gl = @initGL()
     window.gl = @gl
@@ -26,7 +30,7 @@ class window.DisplayWebGLView
     degrees * Math.PI / 180
 
   drawScene: =>
-    box = window.catalog.meshes.box
+    box = @catalog.meshes.box
 
     @gl.viewport 0, 0, @gl.viewportWidth, @gl.viewportHeight
     @gl.clear @gl.COLOR_BUFFER_BIT | @gl.DEPTH_BUFFER_BIT
@@ -120,7 +124,7 @@ class window.DisplayWebGLView
     @initCube()
 
   initCube: =>
-    box = window.catalog.meshes.box
+    box = @catalog.meshes.box
 
     box.vertices.buffer = @gl.createBuffer()
     @gl.bindBuffer @gl.ARRAY_BUFFER, box.vertices.buffer
