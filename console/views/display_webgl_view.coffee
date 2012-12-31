@@ -65,7 +65,7 @@ class window.DisplayWebGLView
       @gl.vertexAttribPointer @shaderProgram.textureCoordAttribute, box.texture.item_size, @gl.FLOAT, false, 0, 0
 
       @gl.activeTexture @gl.TEXTURE0
-      @gl.bindTexture @gl.TEXTURE_2D, @crateTexture
+      @gl.bindTexture @gl.TEXTURE_2D, box.texture.gl_texture
       @gl.uniform1i @shaderProgram.samplerUniform, 0
 
       world_json = @world.toJSON()
@@ -186,11 +186,14 @@ class window.DisplayWebGLView
 
 
   initTexture: =>
-    @crateTexture = @gl.createTexture()
-    @crateTexture.image = new Image()
-    @crateTexture.image.onload = =>
-      @handleLoadedTexture @crateTexture
-    @crateTexture.image.src = "img/crate.gif"
+    box = @catalog.meshes.box
+
+    box.texture.gl_texture = @gl.createTexture()
+    box.texture.gl_texture.image = new Image()
+    box.texture.gl_texture.image.onload = =>
+      @handleLoadedTexture box.texture.gl_texture
+
+    box.texture.gl_texture.image.src = box.texture.image
 
   mvPopMatrix: =>
     throw 'Invalid popMatrix' unless @mvMatrixStack
