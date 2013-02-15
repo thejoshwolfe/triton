@@ -1,6 +1,6 @@
 <div class="row-fluid">
   <div class="span12">
-    <h1>Breasts</h1>
+    <h1>Computer</h1>
 
     <% if @mission?.title? : %>
       <h3>Current Mission: <%= @mission.title %></h3>
